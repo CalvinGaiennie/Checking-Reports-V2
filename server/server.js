@@ -19,7 +19,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://cgcheckingreports.netlify.app/",
+      "https://cgcheckingreports.netlify.app",
       "https://www.cgcheckingreports.netlify.app",
     ],
     credentials: true,

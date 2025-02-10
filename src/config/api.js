@@ -1,5 +1,5 @@
 const API_BASE_URL = import.meta.env.PROD
-  ? "https://checking-reports-v2.onrender.com"
+  ? "https://checking-reports-v2.onrender.com/api"
   : "/api";
 
 export default API_BASE_URL;
