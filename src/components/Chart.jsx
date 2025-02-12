@@ -47,6 +47,8 @@ function Chart({ data }) {
   return (
     <div>
       <div>
+        <h1>User Input Data</h1>
+        <h2>Count of entries per category</h2>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={chartData}>
             <XAxis dataKey="category" />
@@ -60,6 +62,8 @@ function Chart({ data }) {
         </ResponsiveContainer>
       </div>
       <div>
+        <h1>Legacy Data</h1>
+        <h2>Orders Checked per Checker</h2>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={formattedData}>
             <XAxis dataKey="checker" />
