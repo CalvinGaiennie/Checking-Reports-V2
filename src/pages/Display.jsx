@@ -22,10 +22,8 @@ function Display() {
     <div>
       <NavBar />
       <div className="container mt-5">
-        <h1 className="mb-4">Display</h1>
-        {items.map((item) => (
-          <Chart key={item.id} data={item} />
-        ))}
+        <h1 className="mb-4 text-center">Display</h1>
+        <Chart data={items} />
       </div>
     </div>
   );
