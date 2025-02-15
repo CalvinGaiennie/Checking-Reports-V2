@@ -8,7 +8,7 @@ function Display() {
   const [loading, setLoading] = useState(true);
   const [items, setItems] = useState([]);
   const [legacyData, setLegacyData] = useState([]);
-  const [cardSelection, setCardSelection] = useState("");
+  const [cardSelection, setCardSelection] = useState("input");
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -35,26 +35,38 @@ function Display() {
       });
   }, []);
 
+  function handleCardChange(e) {
+    setCardSelection(e.target.value);
+  }
   return (
-    <div>
+    <div className="container mt-4">
       <NavBar />
+      <h1>User Input Data</h1>
+      <h2></h2>
       <div className="container mt-5">
         <h1 className="mb-4 text-center">Display</h1>
         {items.length > 0 && <Chart inputData={items} />}
       </div>
+      <h1>Legacy Data</h1>
+      <h2>Orders Checked per Checker</h2>
       <div className="container mt-5">
-        <h1 className="mb-4 text-center">Display</h1>
         {legacyData.length > 0 && <Chart inputData={legacyData} />}
       </div>
       <div>
-        {/* <select>
+        <h2>Which data would you like to see here?</h2>
+        <select onChange={handleCardChange}>
           <option value="input">Input</option>
           <option value="legacy">Legacy</option>
-        </select> */}
-        {legacyData.length > 0 &&
-          legacyData.map((entry, index) => (
-            <Order key={`order${index}`} data={entry} />
-          ))}
+        </select>
+        {cardSelection === "legacy"
+          ? legacyData.length > 0 &&
+            legacyData.map((entry, index) => (
+              <Order key={`order${index}`} data={entry} />
+            ))
+          : items.length > 0 &&
+            items.map((entry, index) => (
+              <ItemCard key={`order${index}`} data={entry} />
+            ))}
       </div>
     </div>
   );

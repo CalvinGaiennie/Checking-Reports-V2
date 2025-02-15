@@ -60,8 +60,6 @@ function Chart({ inputData = [] }) {
       <br />
       <br />
       <div>
-        <h1>Legacy Data</h1>
-        <h2>Orders Checked per Checker</h2>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={chartData} margin={{ bottom: 50 }}>
             <XAxis dataKey="key" angle={-45} textAnchor="end" interval={0} />
