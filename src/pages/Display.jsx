@@ -25,7 +25,6 @@ function Display() {
     fetch("/output.json")
       .then((response) => response.json())
       .then((json) => {
-        console.log("Fetched legacy data:", json);
         setLegacyData(json);
         setLoading(false);
       })
