@@ -8,65 +8,64 @@ import {
   ResponsiveContainer,
   LabelList,
 } from "recharts";
-import ItemCard from "./ItemCard";
 import { useEffect, useState } from "react";
 
-function Chart({ data }) {
-  const [legacyData, setLegacyData] = useState([]);
-  const [formattedData, setFormattedData] = useState([]);
+function Chart({ inputData = [] }) {
+  const [keys, setKeys] = useState([]);
+  const [chartData, setChartData] = useState([]);
+  const [selectedKey, setSelectedKey] = useState("");
 
   useEffect(() => {
-    fetch("/output.json")
-      .then((response) => response.json())
-      .then((json) => setLegacyData(json))
-      .catch((error) => console.error("Error loading JSON:", error));
-  }, []);
+    if (inputData.length !== 0) {
+      const filteredKeys = Object.keys(inputData[0]).filter(
+        (key) => key !== "_id" && key !== "__v"
+      );
+      setKeys(filteredKeys);
+      setSelectedKey(filteredKeys[0] || ""); // Set the first key as default if available
+    }
+  }, [inputData]);
 
   useEffect(() => {
-    const formatted = Object.entries(
-      legacyData.reduce((acc, item) => {
-        acc[item.OrderChecker] = (acc[item.OrderChecker] || 0) + 1;
+    if (!selectedKey || inputData.length === 0) return;
+
+    const data = Object.entries(
+      inputData.reduce((acc, item) => {
+        if (item[selectedKey]) {
+          acc[item[selectedKey]] = (acc[item[selectedKey]] || 0) + 1;
+        }
         return acc;
       }, {})
-    ).map(([checker, count]) => ({ checker, count }));
-    setFormattedData(formatted);
-    console.log("legacy", legacyData);
-    console.log("formatted", formatted);
-  }, [legacyData]);
+    ).map(([key, count]) => ({ key, count }));
 
-  const categoryCounts = data.reduce((acc, item) => {
-    acc[item.category] = (acc[item.category] || 0) + 1;
-    return acc;
-  }, {});
+    setChartData(data);
+  }, [inputData, selectedKey]);
 
-  const chartData = Object.keys(categoryCounts).map((category) => ({
-    category,
-    count: categoryCounts[category],
-  }));
-  console.log("chart data", chartData);
+  function handleTypeChange(e) {
+    setSelectedKey(e.target.value);
+  }
+
+  function getDates() {}
+  function changeAvailableDates() {}
   return (
     <div>
-      <div>
-        <h1>User Input Data</h1>
-        <h2>Count of entries per category</h2>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={chartData}>
-            <XAxis dataKey="category" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="count" fill="#8884d8">
-              <LabelList dataKey="count" position="top" />
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
+      <h3>Data Type</h3>
+      <select onChange={handleTypeChange} value={selectedKey}>
+        {keys.map((key) => (
+          <option key={key} value={key}>
+            {key}
+          </option>
+        ))}
+      </select>
+      <br />
+      <br />
+      <br />
       <div>
         <h1>Legacy Data</h1>
         <h2>Orders Checked per Checker</h2>
         <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={formattedData}>
-            <XAxis dataKey="checker" />
+          <BarChart data={chartData} margin={{ bottom: 50 }}>
+            <XAxis dataKey="key" angle={-45} textAnchor="end" interval={0} />
+
             <YAxis />
             <Tooltip />
             <Legend />
@@ -76,10 +75,6 @@ function Chart({ data }) {
           </BarChart>
         </ResponsiveContainer>
       </div>
-      <div>Chart 3</div>
-      {data.map((data, index) => (
-        <ItemCard data={data} key={`IC${index}`} />
-      ))}
     </div>
   );
 }
