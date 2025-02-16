@@ -28,3 +28,27 @@ export const postData = async (data) => {
     throw error;
   }
 };
+
+export const createUser = async (userData) => {
+  try {
+    console.log("Creating user:", userData);
+    const response = await api.post("/users", userData);
+    console.log("Server response:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error in createUser:", error);
+    throw error;
+  }
+};
+
+export const loginUser = async (userData) => {
+  try {
+    console.log("Attempting login:", userData);
+    const response = await api.post("/users/login", userData);
+    console.log("Login response:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error in loginUser:", error);
+    throw error;
+  }
+};

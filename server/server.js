@@ -63,6 +63,15 @@ itemSchema.set("toJSON", {
 
 const Item = mongoose.model("Item", itemSchema);
 
+const userSchema = new mongoose.Schema({
+  name: String,
+  username: String,
+  password: String, // In production, ensure this is properly hashed
+  permissions: { type: String, default: "user" }, // Add permissions with default value 'user'
+});
+
+const User = mongoose.model("User", userSchema);
+
 // Routes
 app.get("/api/items", async (req, res) => {
   try {
@@ -107,6 +116,101 @@ app.get("/api/db-test", async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+});
+
+// Add this new endpoint to fetch users
+app.get("/api/users", async (req, res) => {
+  try {
+    const users = await User.find({}, { password: 0 }); // Exclude passwords from the response
+    res.json(users);
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// User routes
+app.post("/api/users", async (req, res) => {
+  try {
+    const { name, username, password } = req.body;
+
+    // Check if username already exists
+    const existingUser = await User.findOne({ username });
+    if (existingUser) {
+      return res.status(400).json({ message: "Username already exists" });
+    }
+
+    const user = new User({
+      name,
+      username,
+      password, // Note: In production, you should hash this password
+    });
+
+    const savedUser = await user.save();
+    res.status(201).json(savedUser);
+  } catch (error) {
+    console.error("Error creating user:", error);
+    res.status(400).json({ message: error.message });
+  }
+});
+
+app.post("/api/users/login", async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    console.log("Login attempt for:", username);
+
+    const user = await User.findOne({ username });
+
+    if (!user) {
+      console.log("User not found:", username);
+      return res
+        .status(401)
+        .json({ success: false, message: "User not found" });
+    }
+
+    if (user.password === password) {
+      console.log("Login successful for:", username);
+      return res.json({
+        success: true,
+        message: "Login successful",
+        username: user.username,
+        permissions: user.permissions || "user",
+      });
+    } else {
+      console.log("Invalid password for:", username);
+      return res
+        .status(401)
+        .json({ success: false, message: "Invalid password" });
+    }
+  } catch (error) {
+    console.error("Login error:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+// Add this route to handle permission updates
+app.patch("/api/users/:userId/permissions", async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { permissions } = req.body;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    user.permissions = permissions;
+    await user.save();
+
+    res.json({ success: true, message: "Permissions updated successfully" });
+  } catch (error) {
+    console.error("Error updating permissions:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to update permissions" });
   }
 });
 
