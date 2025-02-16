@@ -18,6 +18,7 @@ function Chart({ inputData = [] }) {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
+  //gets the keys of the input data
   useEffect(() => {
     if (inputData.length !== 0) {
       const filteredKeys = Object.keys(inputData[0]).filter(
@@ -27,6 +28,8 @@ function Chart({ inputData = [] }) {
       setSelectedKey(filteredKeys[0] || ""); // Set the first key as default if available
     }
   }, [inputData]);
+
+  //gets the count of entrys for each different value of the selected key  (e.g. count of submissions containing each different date or each different user) and sets it as the chart data
 
   useEffect(() => {
     if (!selectedKey || inputData.length === 0) return;
@@ -43,6 +46,7 @@ function Chart({ inputData = [] }) {
     setChartData(data);
   }, [inputData, selectedKey]);
 
+  //gets the unique dates from the input data and sorts them
   useEffect(() => {
     const uniqueDates = new Set(
       inputData
@@ -69,6 +73,7 @@ function Chart({ inputData = [] }) {
     }
   }, [inputData]);
 
+  //filters the data based on the selected key and the start and end dates and sets the chart data
   useEffect(() => {
     if (!selectedKey || !startDate || !endDate) return;
 
