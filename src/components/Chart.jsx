@@ -8,43 +8,119 @@ import {
   ResponsiveContainer,
   LabelList,
 } from "recharts";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useReducer } from "react";
+import { useAuth } from "../context/AuthContext";
+import Select from "./Select";
+
+const initialState = {
+  keys: [],
+  chartData: [],
+  selectedKey: "",
+  sortedDates: [],
+  startDate: "",
+  endDate: "",
+  error: "",
+  selectedFilter: "",
+};
+
+function reducer(state, action) {
+  switch (action.type) {
+    case "set_keys":
+      return { ...state, keys: action.payload };
+    case "set_chart_data":
+      return { ...state, chartData: action.payload };
+    case "set_selected_key":
+      return { ...state, selectedKey: action.payload };
+    case "set_sorted_dates":
+      return { ...state, sortedDates: action.payload };
+    case "set_start_date":
+      return { ...state, startDate: action.payload };
+    case "set_end_date":
+      return { ...state, endDate: action.payload };
+    case "set_error":
+      return { ...state, error: action.payload };
+    case "set_filter":
+      return { ...state, selectedFilter: action.payload };
+    default:
+      return state;
+  }
+}
 
 function Chart({ inputData = [] }) {
-  const [keys, setKeys] = useState([]);
-  const [chartData, setChartData] = useState([]);
-  const [selectedKey, setSelectedKey] = useState("");
-  const [sortedDates, setSortedDates] = useState([]);
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [state, dispatch] = useReducer(reducer, initialState);
 
-  //gets the keys of the input data
+  const { authState } = useAuth();
+
+  // Verify user has appropriate permissions
+  if (
+    !["viewer", "basic admin", "full admin"].includes(authState.permissions)
+  ) {
+    return <div className="alert alert-danger">Unauthorized access</div>;
+  }
+
+  // Sanitize and validate input data
   useEffect(() => {
-    if (inputData.length !== 0) {
-      const filteredKeys = Object.keys(inputData[0]).filter(
-        (key) => key !== "_id" && key !== "__v"
-      );
-      setKeys(filteredKeys);
-      setSelectedKey(filteredKeys[0] || ""); // Set the first key as default if available
+    try {
+      if (!Array.isArray(inputData)) {
+        throw new Error("Invalid input data format");
+      }
+
+      if (inputData.length !== 0) {
+        const firstItem = inputData[0];
+        if (typeof firstItem !== "object") {
+          throw new Error("Invalid data structure");
+        }
+
+        const filteredKeys = Object.keys(firstItem).filter((key) => {
+          const safeKey = key.replace(/[^a-zA-Z0-9_]/g, "");
+          return safeKey !== "_id" && safeKey !== "__v";
+        });
+
+        dispatch({ type: "set_keys", payload: filteredKeys });
+        dispatch({ type: "set_selected_key", payload: filteredKeys[0] || "" });
+        dispatch({ type: "set_error", payload: "" });
+      }
+    } catch (err) {
+      dispatch({
+        type: "set_error",
+        payload: "Error processing data: " + err.message,
+      });
+      console.error("Chart data error:", err);
     }
   }, [inputData]);
 
-  //gets the count of entrys for each different value of the selected key  (e.g. count of submissions containing each different date or each different user) and sets it as the chart data
-
+  // Safe data processing for chart
   useEffect(() => {
-    if (!selectedKey || inputData.length === 0) return;
+    try {
+      if (
+        !state.selectedKey ||
+        !Array.isArray(inputData) ||
+        inputData.length === 0
+      )
+        return;
 
-    const data = Object.entries(
-      inputData.reduce((acc, item) => {
-        if (item[selectedKey]) {
-          acc[item[selectedKey]] = (acc[item[selectedKey]] || 0) + 1;
-        }
-        return acc;
-      }, {})
-    ).map(([key, count]) => ({ key, count }));
+      const data = Object.entries(
+        inputData.reduce((acc, item) => {
+          const value = item[state.selectedKey];
+          if (value && typeof value !== "function") {
+            // Prevent code injection
+            const safeValue = String(value).slice(0, 100); // Limit string length
+            acc[safeValue] = (acc[safeValue] || 0) + 1;
+          }
+          return acc;
+        }, {})
+      ).map(([key, count]) => ({
+        key: key.replace(/[<>]/g, ""), // Remove potential HTML tags
+        count: Number(count) || 0,
+      }));
 
-    setChartData(data);
-  }, [inputData, selectedKey]);
+      dispatch({ type: "set_chart_data", payload: data });
+      dispatch({ type: "set_error", payload: "" });
+    } catch (err) {
+      dispatch({ type: "set_error", payload: "Error generating chart data" });
+      console.error("Chart generation error:", err);
+    }
+  }, [inputData, state.selectedKey]);
 
   //gets the unique dates from the input data and sorts them
   useEffect(() => {
@@ -65,125 +141,107 @@ function Chart({ inputData = [] }) {
     const sortedDates = Array.from(uniqueDates).sort((a, b) =>
       a.localeCompare(b)
     );
-    setSortedDates(sortedDates);
+    dispatch({ type: "set_sorted_dates", payload: sortedDates });
 
     if (sortedDates.length > 0) {
-      setStartDate(sortedDates[0]);
-      setEndDate(sortedDates[sortedDates.length - 1]);
+      dispatch({ type: "set_start_date", payload: sortedDates[0] });
+      dispatch({
+        type: "set_end_date",
+        payload: sortedDates[sortedDates.length - 1],
+      });
     }
   }, [inputData]);
 
   //filters the data based on the selected key and the start and end dates and sets the chart data
   useEffect(() => {
-    if (!selectedKey || !startDate || !endDate) return;
+    if (!state.selectedKey || !state.startDate || !state.endDate) return;
 
     const filteredData = inputData.filter((item) => {
       const itemDate = item.date || item.Date;
       const itemDateObj = new Date(itemDate);
-      const startDateObj = new Date(startDate);
-      const endDateObj = new Date(endDate);
+      const startDateObj = new Date(state.startDate);
+      const endDateObj = new Date(state.endDate);
 
       return itemDateObj >= startDateObj && itemDateObj <= endDateObj;
     });
 
     const data = Object.entries(
       filteredData.reduce((acc, item) => {
-        if (item[selectedKey]) {
-          acc[item[selectedKey]] = (acc[item[selectedKey]] || 0) + 1;
+        if (item[state.selectedKey]) {
+          acc[item[state.selectedKey]] =
+            (acc[item[state.selectedKey]] || 0) + 1;
         }
         return acc;
       }, {})
     ).map(([key, count]) => ({ key, count }));
 
-    setChartData(data);
-  }, [inputData, selectedKey, startDate, endDate]);
+    dispatch({ type: "set_chart_data", payload: data });
+  }, [inputData, state.selectedKey, state.startDate, state.endDate]);
 
   function handleTypeChange(e) {
-    setSelectedKey(e.target.value);
+    dispatch({ type: "set_selected_key", payload: e.target.value });
   }
 
   function handleStartDateChange(e) {
-    setStartDate(e.target.value);
+    dispatch({ type: "set_start_date", payload: e.target.value });
   }
+
   function handleEndDateChange(e) {
-    setEndDate(e.target.value);
+    dispatch({ type: "set_end_date", payload: e.target.value });
   }
-  function changeAvailableDates() {
-    if (!selectedKey) return;
 
-    const filteredData = inputData.filter((item) => {
-      const itemDate = item.date || item.Date;
-      return itemDate >= startDate && itemDate <= endDate;
-    });
-
-    const data = Object.entries(
-      filteredData.reduce((acc, item) => {
-        if (item[selectedKey]) {
-          acc[item[selectedKey]] = (acc[item[selectedKey]] || 0) + 1;
-        }
-        return acc;
-      }, {})
-    ).map(([key, count]) => ({ key, count }));
-
-    setChartData(data);
+  function handleFilterChange(e) {
+    dispatch({ type: "set_filter", payload: e.target.value });
   }
 
   return (
     <div>
-      <div>
-        <h3>Data Type</h3>
-        <select onChange={handleTypeChange} value={selectedKey}>
-          {keys.map((key) => (
-            <option key={key} value={key}>
-              {key}
-            </option>
-          ))}
-        </select>
-      </div>
-      <div>
-        <h3>Dates</h3>
-        <div>
-          <div className="d-flex flex-column">
-            <label>Start Date</label>
-            <select onChange={handleStartDateChange} value={startDate}>
-              {sortedDates.map((date) => (
-                <option key={date} value={date}>
-                  {date}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <div className="d-flex flex-column">
-              <label>End Date</label>
-              <select onChange={handleEndDateChange} value={endDate}>
-                {sortedDates.map((date) => (
-                  <option key={date} value={date}>
-                    {date}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
-      <br />
-      <br />
-      <br />
-      <div>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={chartData} margin={{ bottom: 50 }}>
-            <XAxis dataKey="key" angle={-45} textAnchor="end" interval={0} />
+      {state.error && <div className="alert alert-danger">{state.error}</div>}
+      <div id="chart-settings">
+        <Select
+          options={state.keys}
+          dispatch={dispatch}
+          stateValue={state.selectedKey}
+          title="Data Type"
+          dispatchType="set_selected_key"
+        />
 
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="count" fill="#8884d8">
-              <LabelList dataKey="count" position="top" />
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
+        <Select
+          options={state.keys}
+          dispatch={dispatch}
+          stateValue={state.selectedFilter}
+          title="Filter"
+          dispatchType="set_filter"
+        />
+
+        <Select
+          options={state.sortedDates}
+          dispatch={dispatch}
+          stateValue={state.startDate}
+          title="Start Date"
+          dispatchType="set_start_date"
+        />
+
+        <Select
+          options={state.sortedDates}
+          dispatch={dispatch}
+          stateValue={state.endDate}
+          title="End Date"
+          dispatchType="set_end_date"
+        />
       </div>
+      <ResponsiveContainer width="100%" height={300}>
+        <BarChart data={state.chartData} margin={{ bottom: 50 }}>
+          <XAxis dataKey="key" angle={-45} textAnchor="end" interval={0} />
+
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          <Bar dataKey="count" fill="#8884d8">
+            <LabelList dataKey="count" position="top" />
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
     </div>
   );
 }
