@@ -1,17 +1,11 @@
-function Select({ options, dispatch, stateValue, title, dispatchType }) {
+function Select({ options, value, onChange, title }) {
   return (
     <div>
       <h3>{title}</h3>
-      <select
-        onChange={(e) =>
-          dispatch({ type: dispatchType, payload: e.target.value })
-        }
-        value={stateValue}
-        className="form-select"
-      >
-        {options.map((options) => (
-          <option key={options} value={options}>
-            {options}
+      <select onChange={onChange} value={value} className="form-select">
+        {options.map((option) => (
+          <option key={option} value={option}>
+            {option}
           </option>
         ))}
       </select>

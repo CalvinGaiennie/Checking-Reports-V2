@@ -8,9 +8,9 @@ import {
   ResponsiveContainer,
   LabelList,
 } from "recharts";
-import { useEffect, useState, useReducer } from "react";
+import { useEffect, useReducer } from "react";
 import { useAuth } from "../context/AuthContext";
-import Select from "./Select";
+import ChartSettings from "./ChartSettings";
 
 const initialState = {
   keys: [],
@@ -197,43 +197,23 @@ function Chart({ inputData = [] }) {
   return (
     <div>
       {state.error && <div className="alert alert-danger">{state.error}</div>}
-      <div id="chart-settings">
-        <Select
-          options={state.keys}
-          dispatch={dispatch}
-          stateValue={state.selectedKey}
-          title="Data Type"
-          dispatchType="set_selected_key"
-        />
 
-        <Select
-          options={state.keys}
-          dispatch={dispatch}
-          stateValue={state.selectedFilter}
-          title="Filter"
-          dispatchType="set_filter"
-        />
+      <ChartSettings
+        keys={state.keys}
+        selectedKey={state.selectedKey}
+        startDate={state.startDate}
+        endDate={state.endDate}
+        sortedDates={state.sortedDates}
+        selectedFilter={state.selectedFilter}
+        onTypeChange={handleTypeChange}
+        onStartDateChange={handleStartDateChange}
+        onEndDateChange={handleEndDateChange}
+        onFilterChange={handleFilterChange}
+      />
 
-        <Select
-          options={state.sortedDates}
-          dispatch={dispatch}
-          stateValue={state.startDate}
-          title="Start Date"
-          dispatchType="set_start_date"
-        />
-
-        <Select
-          options={state.sortedDates}
-          dispatch={dispatch}
-          stateValue={state.endDate}
-          title="End Date"
-          dispatchType="set_end_date"
-        />
-      </div>
       <ResponsiveContainer width="100%" height={300}>
         <BarChart data={state.chartData} margin={{ bottom: 50 }}>
           <XAxis dataKey="key" angle={-45} textAnchor="end" interval={0} />
-
           <YAxis />
           <Tooltip />
           <Legend />
