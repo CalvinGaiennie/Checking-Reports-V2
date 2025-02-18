@@ -21,6 +21,7 @@ const initialState = {
   endDate: "",
   error: "",
   selectedFilter: "",
+  activeDates: [],
 };
 
 function reducer(state, action) {
@@ -41,6 +42,8 @@ function reducer(state, action) {
       return { ...state, error: action.payload };
     case "set_filter":
       return { ...state, selectedFilter: action.payload };
+    case "set_active_dates":
+      return { ...state, activeDates: action.payload };
     default:
       return state;
   }
@@ -152,17 +155,14 @@ function Chart({ inputData = [] }) {
     }
   }, [inputData]);
 
-  //filters the data based on the selected key and the start and end dates and sets the chart data
+  //counts the number of submissions based on the selected key and the available dates and updates the chart data
   useEffect(() => {
     if (!state.selectedKey || !state.startDate || !state.endDate) return;
 
     const filteredData = inputData.filter((item) => {
       const itemDate = item.date || item.Date;
-      const itemDateObj = new Date(itemDate);
-      const startDateObj = new Date(state.startDate);
-      const endDateObj = new Date(state.endDate);
-
-      return itemDateObj >= startDateObj && itemDateObj <= endDateObj;
+      const itemDateStr = new Date(itemDate).toISOString().split("T")[0];
+      return state.activeDates.includes(itemDateStr);
     });
 
     const data = Object.entries(
@@ -175,8 +175,44 @@ function Chart({ inputData = [] }) {
       }, {})
     ).map(([key, count]) => ({ key, count }));
 
-    dispatch({ type: "set_chart_data", payload: data });
-  }, [inputData, state.selectedKey, state.startDate, state.endDate]);
+    // Apply percentage calculation if percentage filter is selected
+    if (state.selectedFilter === "percentage") {
+      const totalSubmissions = data.reduce((acc, item) => acc + item.count, 0);
+      const percentages = data.map((item) => ({
+        ...item,
+        count: Number(((item.count / totalSubmissions) * 100).toFixed(2)),
+      }));
+      dispatch({ type: "set_chart_data", payload: percentages });
+    } else {
+      dispatch({ type: "set_chart_data", payload: data });
+    }
+  }, [
+    inputData,
+    state.selectedKey,
+    state.startDate,
+    state.endDate,
+    state.activeDates,
+    state.selectedFilter,
+  ]);
+
+  useEffect(() => {
+    setInitialActiveDates();
+  }, [state.startDate, state.endDate]);
+
+  function setInitialActiveDates() {
+    if (!state.startDate || !state.endDate || state.activeDates.length > 0)
+      return;
+    const dates = [];
+    const currentDate = new Date(state.startDate);
+    const endDate = new Date(state.endDate);
+
+    while (currentDate <= endDate) {
+      dates.push(currentDate.toISOString().split("T")[0]);
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    dispatch({ type: "set_active_dates", payload: dates });
+  }
 
   function handleTypeChange(e) {
     dispatch({ type: "set_selected_key", payload: e.target.value });
@@ -194,6 +230,13 @@ function Chart({ inputData = [] }) {
     dispatch({ type: "set_filter", payload: e.target.value });
   }
 
+  function handleDateToggle(date) {
+    const newActiveDates = state.activeDates.includes(date)
+      ? state.activeDates.filter((d) => d !== date)
+      : [...state.activeDates, date];
+    dispatch({ type: "set_active_dates", payload: newActiveDates });
+  }
+
   return (
     <div>
       {state.error && <div className="alert alert-danger">{state.error}</div>}
@@ -205,10 +248,12 @@ function Chart({ inputData = [] }) {
         endDate={state.endDate}
         sortedDates={state.sortedDates}
         selectedFilter={state.selectedFilter}
+        activeDates={state.activeDates}
         onTypeChange={handleTypeChange}
         onStartDateChange={handleStartDateChange}
         onEndDateChange={handleEndDateChange}
         onFilterChange={handleFilterChange}
+        onDateToggle={handleDateToggle}
       />
 
       <ResponsiveContainer width="100%" height={300}>
@@ -218,7 +263,13 @@ function Chart({ inputData = [] }) {
           <Tooltip />
           <Legend />
           <Bar dataKey="count" fill="#8884d8">
-            <LabelList dataKey="count" position="top" />
+            <LabelList
+              dataKey="count"
+              position="top"
+              formatter={(value) =>
+                state.selectedFilter === "percentage" ? `${value}%` : value
+              }
+            />
           </Bar>
         </BarChart>
       </ResponsiveContainer>
