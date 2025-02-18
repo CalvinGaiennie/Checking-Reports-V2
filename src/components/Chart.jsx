@@ -7,6 +7,9 @@ import {
   Legend,
   ResponsiveContainer,
   LabelList,
+  PieChart,
+  Pie,
+  Cell,
 } from "recharts";
 import { useEffect, useReducer } from "react";
 import { useAuth } from "../context/AuthContext";
@@ -44,12 +47,14 @@ function reducer(state, action) {
       return { ...state, selectedFilter: action.payload };
     case "set_active_dates":
       return { ...state, activeDates: action.payload };
+    case "set_possible_dates":
+      return { ...state, possibleDates: action.payload };
     default:
       return state;
   }
 }
 
-function Chart({ inputData = [] }) {
+function Chart({ inputData = [], chartType }) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const { authState } = useAuth();
@@ -203,12 +208,12 @@ function Chart({ inputData = [] }) {
     if (!state.startDate || !state.endDate || state.activeDates.length > 0)
       return;
     const dates = [];
-    const currentDate = new Date(state.startDate);
+    const startDate = new Date(state.startDate);
     const endDate = new Date(state.endDate);
 
-    while (currentDate <= endDate) {
-      dates.push(currentDate.toISOString().split("T")[0]);
-      currentDate.setDate(currentDate.getDate() + 1);
+    while (startDate <= endDate) {
+      dates.push(startDate.toISOString().split("T")[0]);
+      startDate.setDate(startDate.getDate() + 1);
     }
 
     dispatch({ type: "set_active_dates", payload: dates });
@@ -237,6 +242,15 @@ function Chart({ inputData = [] }) {
     dispatch({ type: "set_active_dates", payload: newActiveDates });
   }
 
+  const COLORS = [
+    "#0088FE",
+    "#00C49F",
+    "#FFBB28",
+    "#FF8042",
+    "#AF19FF",
+    "#FF4567",
+  ];
+
   return (
     <div>
       {state.error && <div className="alert alert-danger">{state.error}</div>}
@@ -255,24 +269,51 @@ function Chart({ inputData = [] }) {
         onFilterChange={handleFilterChange}
         onDateToggle={handleDateToggle}
       />
-
-      <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={state.chartData} margin={{ bottom: 50 }}>
-          <XAxis dataKey="key" angle={-45} textAnchor="end" interval={0} />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          <Bar dataKey="count" fill="#8884d8">
-            <LabelList
-              dataKey="count"
-              position="top"
-              formatter={(value) =>
-                state.selectedFilter === "percentage" ? `${value}%` : value
-              }
-            />
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
+      {chartType == "pie" ? (
+        <div>
+          <ResponsiveContainer width="100%" height={300}>
+            <PieChart data={state.chartData} margin={{ bottom: 50 }}>
+              <Pie
+                data={state.chartData}
+                dataKey="count"
+                nameKey="key"
+                cx="50%"
+                cy="50%"
+                outerRadius={100}
+                fill="#8884d8"
+                label={({ name }) => name}
+              >
+                {state.chartData.map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={COLORS[index % COLORS.length]}
+                  />
+                ))}
+              </Pie>
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+      ) : (
+        <div>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={state.chartData} margin={{ bottom: 50 }}>
+              <XAxis dataKey="key" angle={-45} textAnchor="end" interval={0} />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="count" fill="#8884d8">
+                <LabelList
+                  dataKey="count"
+                  position="top"
+                  formatter={(value) =>
+                    state.selectedFilter === "percentage" ? `${value}%` : value
+                  }
+                />
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      )}
     </div>
   );
 }

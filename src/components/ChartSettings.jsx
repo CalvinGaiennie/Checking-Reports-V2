@@ -31,16 +31,22 @@ function ChartSettings({
           options={keys}
           value={selectedKey}
           onChange={onTypeChange}
-          title="Data Type"
+          title="Data"
         />
 
         <Select
           options={["percentage", "count"]}
           value={selectedFilter}
           onChange={onFilterChange}
-          title="Filter"
+          title="Measurement Type"
         />
 
+        <h2>Filter</h2>
+        <p>
+          Add a select here that dynamicay changes which dataset is loaded into
+          the available component and renders start and end when dates are
+          selected
+        </p>
         <Select
           options={sortedDates}
           value={startDate}
@@ -61,27 +67,20 @@ function ChartSettings({
             className="date-dropdown border p-2 bg-light"
             style={{ maxHeight: "100px", overflowY: "auto" }}
           >
-            {sortedDates
-              .filter((date) => {
-                const dateObj = new Date(date);
-                return (
-                  dateObj >= new Date(startDate) && dateObj <= new Date(endDate)
-                );
-              })
-              .map((date) => (
-                <div key={date} className="form-check">
-                  <input
-                    type="checkbox"
-                    className="form-check-input"
-                    id={`date-${date}`}
-                    checked={activeDates.includes(date)}
-                    onChange={() => onDateToggle(date)}
-                  />
-                  <label className="form-check-label" htmlFor={`date-${date}`}>
-                    {date}
-                  </label>
-                </div>
-              ))}
+            {sortedDates.map((date) => (
+              <div key={date} className="form-check">
+                <input
+                  type="checkbox"
+                  className="form-check-input"
+                  id={`date-${date}`}
+                  checked={activeDates.includes(date)}
+                  onChange={() => onDateToggle(date)}
+                />
+                <label className="form-check-label" htmlFor={`date-${date}`}>
+                  {date}
+                </label>
+              </div>
+            ))}
           </div>
         </div>
       </div>

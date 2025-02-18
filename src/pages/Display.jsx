@@ -44,7 +44,7 @@ function Display() {
       <h2></h2>
       <div className="container mt-5">
         <h1 className="mb-4 text-center">Display</h1>
-        {items.length > 0 && <Chart inputData={items} />}
+        {items.length > 0 && <Chart inputData={items} chartType="bar" />}
       </div>
       <h1>Legacy Data</h1>
       <h2>Orders Checked per Checker</h2>
