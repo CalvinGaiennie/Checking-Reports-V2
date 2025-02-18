@@ -72,6 +72,18 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model("User", userSchema);
 
+const inputSchema = new mongoose.Schema({
+  type: String,
+  name: String,
+  required: Boolean,
+});
+
+const chartSchema = new mongoose.Schema({
+  type: String,
+  name: String,
+  input: String,
+});
+
 // Routes
 app.get("/api/items", async (req, res) => {
   try {

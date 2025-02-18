@@ -54,7 +54,7 @@ function reducer(state, action) {
   }
 }
 
-function Chart({ inputData = [], chartType }) {
+function Chart({ inputData = [], chartType, title }) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const { authState } = useAuth();
@@ -252,9 +252,9 @@ function Chart({ inputData = [], chartType }) {
   ];
 
   return (
-    <div>
+    <div className="mt-4">
       {state.error && <div className="alert alert-danger">{state.error}</div>}
-
+      <h2 className="mb-4 text-center">{title}</h2>
       <ChartSettings
         keys={state.keys}
         selectedKey={state.selectedKey}

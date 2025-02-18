@@ -40,23 +40,19 @@ function Display() {
   return (
     <div className="container mt-4">
       <NavBar />
-      <h1>User Input Data</h1>
-      <h2></h2>
-      <div className="container mt-5">
-        <h1 className="mb-4 text-center">Display</h1>
-        {items.length > 0 && <Chart inputData={items} chartType="bar" />}
-      </div>
-      <h1>Legacy Data</h1>
-      <h2>Orders Checked per Checker</h2>
-      <div className="container mt-5">
-        {legacyData.length > 0 && <Chart inputData={legacyData} />}
-      </div>
+      {items.length > 0 && (
+        <Chart title="Display" inputData={items} chartType="bar" />
+      )}
+      {legacyData.length > 0 && (
+        <Chart title="Orders Checked per Checker" inputData={legacyData} />
+      )}
       <div>
         <h2>Which data would you like to see here?</h2>
         <select onChange={handleCardChange}>
           <option value="input">Input</option>
           <option value="legacy">Legacy</option>
         </select>
+        {/* I need to refactor the card component to be able to and data from any form so the user can dynamically put the cards for any user made form here from the admin page */}
         {cardSelection === "legacy"
           ? legacyData.length > 0 &&
             legacyData.map((entry, index) => (
