@@ -15,7 +15,7 @@ function ChartSettings({
   onFilterChange,
   onDateToggle,
 }) {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <div className="mb-4 ">

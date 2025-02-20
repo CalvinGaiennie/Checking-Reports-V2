@@ -37,15 +37,34 @@ function Display() {
   function handleCardChange(e) {
     setCardSelection(e.target.value);
   }
+
+  const charts = [
+    {
+      title: "Display1",
+      inputData: items,
+      chartType: "bar",
+      defaultSettings: {},
+    },
+    {
+      title: "Orders Checked per Checker",
+      inputData: legacyData,
+      chartType: "pie",
+      defaultSettings: {},
+    },
+  ];
+
   return (
     <div className="container mt-4">
       <NavBar />
-      {items.length > 0 && (
-        <Chart title="Display" inputData={items} chartType="bar" />
-      )}
-      {legacyData.length > 0 && (
-        <Chart title="Orders Checked per Checker" inputData={legacyData} />
-      )}
+      {charts.map((chart) => (
+        <Chart
+          key={chart.title}
+          title={chart.title}
+          inputData={chart.inputData}
+          chartType={chart.chartType}
+          defaultSettings={chart.defaultSettings}
+        />
+      ))}
       <div>
         <h2>Which data would you like to see here?</h2>
         <select onChange={handleCardChange}>
