@@ -1,0 +1,6 @@
+•Add default settings to charts
+• Allow admin to define and edit charts and forms
+• Have forms render dynamically based on user choice
+•let users set a default form 
+•allow admin to give user permissions to certain, charts, settings, and froms
+•allow admin to create reports that can be exported
