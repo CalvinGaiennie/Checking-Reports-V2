@@ -11,6 +11,7 @@ function Display() {
   const [legacyData, setLegacyData] = useState([]);
   const [charts, setCharts] = useState([]);
   const [cardSelection, setCardSelection] = useState("input");
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -19,6 +20,7 @@ function Display() {
         setItems(data);
       } catch (error) {
         console.error("Error fetching data:", error);
+        setError("Failed to load items");
       }
     };
     fetchData();
@@ -28,10 +30,10 @@ function Display() {
     const loadCharts = async () => {
       try {
         const data = await getCharts();
-        console.log("data", data);
         setCharts(data || []);
       } catch (error) {
         console.error("Error fetching charts:", error);
+        setError("Failed to load charts");
         setCharts([]);
       }
     };
@@ -39,17 +41,41 @@ function Display() {
   }, []);
 
   useEffect(() => {
-    fetch("/output.json")
-      .then((response) => response.json())
-      .then((json) => {
+    const loadLegacyData = async () => {
+      try {
+        const response = await fetch("/output.json");
+        if (!response.ok) {
+          throw new Error("Failed to load legacy data");
+        }
+        const json = await response.json();
         setLegacyData(json);
-        setLoading(false);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error("Error loading JSON:", error);
+        setError("Failed to load legacy data");
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+    loadLegacyData();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="container mt-4">
+        <NavBar />
+        <div className="text-center">Loading...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mt-4">
+        <NavBar />
+        <div className="alert alert-danger">{error}</div>
+      </div>
+    );
+  }
 
   function handleCardChange(e) {
     setCardSelection(e.target.value);

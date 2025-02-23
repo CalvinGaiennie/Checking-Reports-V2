@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import API_BASE_URL from "../config/api";
 import GenericInputForm from "./GenericInputForm";
-import { createChart, deleteChart } from "../services/api.service";
+import { createChart, deleteChart, api } from "../services/api.service";
 
 function Admin() {
   const [users, setUsers] = useState([]);
@@ -19,12 +19,8 @@ function Admin() {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch("/api/users");
-      if (!response.ok) {
-        throw new Error("Failed to fetch users");
-      }
-      const data = await response.json();
-      setUsers(data);
+      const response = await api.get("/users");
+      setUsers(response.data);
     } catch (err) {
       setError(err.message);
     }
@@ -32,12 +28,8 @@ function Admin() {
 
   const fetchCharts = async () => {
     try {
-      const response = await fetch("/api/charts");
-      if (!response.ok) {
-        throw new Error("Failed to fetch charts");
-      }
-      const data = await response.json();
-      setCharts(data);
+      const response = await api.get("/charts");
+      setCharts(response.data);
     } catch (err) {
       setError(err.message);
     }
@@ -45,22 +37,17 @@ function Admin() {
 
   const handlePermissionChange = async (userId, newPermission) => {
     try {
-      const response = await axios.patch(
-        `${API_BASE_URL}/users/${userId}/permissions`,
-        {
-          permissions: newPermission,
-        }
-      );
+      const response = await api.patch(`/users/${userId}/permissions`, {
+        permissions: newPermission,
+      });
 
       if (response.data.success) {
         setUpdateMessage("Permissions updated successfully!");
-        // Update the local state to reflect the change
         setUsers(
           users.map((user) =>
             user._id === userId ? { ...user, permissions: newPermission } : user
           )
         );
-        // Clear success message after 3 seconds
         setTimeout(() => setUpdateMessage(""), 3000);
       }
     } catch (error) {
