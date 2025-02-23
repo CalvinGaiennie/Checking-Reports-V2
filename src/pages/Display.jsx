@@ -1,14 +1,17 @@
 import { useState, useEffect } from "react";
-import Chart from "../components/Chart";
+import ChartComponent from "../components/ChartComponent";
 import NavBar from "../components/NavBar";
-import { getData } from "../services/api.service";
+import { getData, getCharts } from "../services/api.service";
 import ItemCard from "../components/ItemCard";
 import Order from "../components/Order";
+
 function Display() {
   const [loading, setLoading] = useState(true);
   const [items, setItems] = useState([]);
   const [legacyData, setLegacyData] = useState([]);
+  const [charts, setCharts] = useState([]);
   const [cardSelection, setCardSelection] = useState("input");
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -19,6 +22,20 @@ function Display() {
       }
     };
     fetchData();
+  }, []);
+
+  useEffect(() => {
+    const loadCharts = async () => {
+      try {
+        const data = await getCharts();
+        console.log("data", data);
+        setCharts(data || []);
+      } catch (error) {
+        console.error("Error fetching charts:", error);
+        setCharts([]);
+      }
+    };
+    loadCharts();
   }, []);
 
   useEffect(() => {
@@ -38,33 +55,25 @@ function Display() {
     setCardSelection(e.target.value);
   }
 
-  const charts = [
-    {
-      title: "Display1",
-      inputData: items,
-      chartType: "bar",
-      defaultSettings: {},
-    },
-    {
-      title: "Orders Checked per Checker",
-      inputData: legacyData,
-      chartType: "pie",
-      defaultSettings: {},
-    },
-  ];
-
+  const dataSets = {
+    items: items,
+    legacyData: legacyData,
+  };
   return (
     <div className="container mt-4">
       <NavBar />
-      {charts.map((chart) => (
-        <Chart
-          key={chart.title}
-          title={chart.title}
-          inputData={chart.inputData}
-          chartType={chart.chartType}
-          defaultSettings={chart.defaultSettings}
-        />
-      ))}
+      {!loading &&
+        charts &&
+        charts.length > 0 &&
+        charts.map((chart) => (
+          <ChartComponent
+            key={chart.name}
+            title={chart.name}
+            inputData={dataSets[chart.input]}
+            chartType={chart.type}
+            // defaultSettings={chart.defaultSettings}
+          />
+        ))}
       <div>
         <h2>Which data would you like to see here?</h2>
         <select onChange={handleCardChange}>

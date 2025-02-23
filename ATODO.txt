@@ -1,6 +1,7 @@
 •Add default settings to charts
-• Allow admin to define and edit charts and forms
+• Allow admin to define and edit forms
+  // I can map over the data keys and have each one map to an object that contains the input type, if its a select, the options, the name, and whether or not its required.
 • Have forms render dynamically based on user choice
 •let users set a default form 
-•allow admin to give user permissions to certain, charts, settings, and froms
+•allow admin to give user permissions to certain, charts, settings, and forms
 •allow admin to create reports that can be exported

@@ -54,7 +54,7 @@ function reducer(state, action) {
   }
 }
 
-function Chart({ inputData = [], chartType, title }) {
+function ChartComponent({ inputData = [], chartType, title }) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const { authState } = useAuth();
@@ -318,4 +318,4 @@ function Chart({ inputData = [], chartType, title }) {
   );
 }
 
-export default Chart;
+export default ChartComponent;

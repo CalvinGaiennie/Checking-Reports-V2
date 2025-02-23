@@ -45,6 +45,8 @@ mongoose
     process.exit(1);
   });
 
+/////////////////////////
+
 const itemSchema = new mongoose.Schema({
   name: { type: String, required: true },
   value: { type: Number, required: true },
@@ -84,7 +86,11 @@ const chartSchema = new mongoose.Schema({
   input: String,
 });
 
+const Chart = mongoose.model("Chart", chartSchema);
+
 // Routes
+/////////////////////////
+//Item Routes
 app.get("/api/items", async (req, res) => {
   try {
     console.log("Attempting to fetch items...");
@@ -107,30 +113,8 @@ app.post("/api/items", async (req, res) => {
   }
 });
 
-// Test route for basic server
-app.get("/api/test", (req, res) => {
-  res.json({ message: "Server is running" });
-});
-
-// Test route for MongoDB connection
-app.get("/api/db-test", async (req, res) => {
-  try {
-    const dbStatus = mongoose.connection.readyState;
-    const status = {
-      0: "disconnected",
-      1: "connected",
-      2: "connecting",
-      3: "disconnecting",
-    };
-    res.json({
-      status: status[dbStatus],
-      database: mongoose.connection.name,
-    });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
+/////////////////////////
+//User Routes
 // Add this new endpoint to fetch users
 app.get("/api/users", async (req, res) => {
   try {
@@ -223,6 +207,85 @@ app.patch("/api/users/:userId/permissions", async (req, res) => {
     res
       .status(500)
       .json({ success: false, message: "Failed to update permissions" });
+  }
+});
+
+///////////////////////////
+// Chart Routes
+
+app.get("/api/charts", async (req, res) => {
+  try {
+    console.log("Attempting to fetch charts...");
+    const charts = await Chart.find();
+    console.log("Found charts in database:", charts);
+    res.json(charts);
+  } catch (error) {
+    console.error("Error fetching items:", error);
+    res.status(500).json({ message: error.message });
+  }
+});
+
+app.post("/api/charts", async (req, res) => {
+  try {
+    const { type, name, input } = req.body;
+
+    // Check if chart name already exists
+    const existingChart = await Chart.findOne({ name });
+    if (existingChart) {
+      return res.status(400).json({ message: "Chart name already exists." });
+    }
+
+    const chart = new Chart({
+      type,
+      name,
+      input,
+    });
+
+    const savedChart = await chart.save();
+    res.status(201).json(savedChart);
+  } catch (error) {
+    console.error("Error creating chart:", error);
+    res.status(400).json({ message: error.message });
+  }
+});
+
+app.delete("/api/charts/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deletedChart = await Chart.findByIdAndDelete(id);
+
+    if (!deletedChart) {
+      return res.status(404).json({ message: "Chart not found" });
+    }
+
+    res.status(200).json({ message: "Chart deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting chart:", error);
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Test route for basic server
+app.get("/api/test", (req, res) => {
+  res.json({ message: "Server is running" });
+});
+
+// Test route for MongoDB connection
+app.get("/api/db-test", async (req, res) => {
+  try {
+    const dbStatus = mongoose.connection.readyState;
+    const status = {
+      0: "disconnected",
+      1: "connected",
+      2: "connecting",
+      3: "disconnecting",
+    };
+    res.json({
+      status: status[dbStatus],
+      database: mongoose.connection.name,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });
 

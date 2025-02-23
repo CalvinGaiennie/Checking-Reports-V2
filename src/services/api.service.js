@@ -52,3 +52,34 @@ export const loginUser = async (userData) => {
     throw error;
   }
 };
+
+export const getCharts = async () => {
+  try {
+    const response = await api.get("/charts");
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const createChart = async (chartData) => {
+  try {
+    console.log("Creating chart:", chartData);
+    const response = await api.post("/charts", chartData);
+    console.log("Server response:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error in createChart:", error);
+    throw error;
+  }
+};
+
+export const deleteChart = async (chartId) => {
+  try {
+    const response = await api.delete(`/charts/${chartId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error in deleteChart:", error);
+    throw error;
+  }
+};
