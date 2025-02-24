@@ -9,7 +9,6 @@ function ChartSettings({
   sortedDates,
   selectedFilter,
   activeDates,
-  onTypeChange,
   onStartDateChange,
   onEndDateChange,
   onFilterChange,
@@ -27,13 +26,6 @@ function ChartSettings({
       </button>
 
       <div className={`collapse ${isOpen ? "show" : ""}`}>
-        <Select
-          options={keys}
-          value={selectedKey}
-          onChange={onTypeChange}
-          title="Data"
-        />
-
         <Select
           options={["percentage", "count"]}
           value={selectedFilter}

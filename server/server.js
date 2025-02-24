@@ -84,6 +84,7 @@ const chartSchema = new mongoose.Schema({
   type: String,
   name: String,
   input: String,
+  metric: String,
 });
 
 const Chart = mongoose.model("Chart", chartSchema);
@@ -227,7 +228,7 @@ app.get("/api/charts", async (req, res) => {
 
 app.post("/api/charts", async (req, res) => {
   try {
-    const { type, name, input } = req.body;
+    const { type, name, input, metric } = req.body;
 
     // Check if chart name already exists
     const existingChart = await Chart.findOne({ name });
@@ -239,6 +240,7 @@ app.post("/api/charts", async (req, res) => {
       type,
       name,
       input,
+      metric,
     });
 
     const savedChart = await chart.save();

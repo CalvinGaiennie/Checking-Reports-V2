@@ -1,21 +1,25 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
-import API_BASE_URL from "../config/api";
 import GenericInputForm from "./GenericInputForm";
-import { createChart, deleteChart, api } from "../services/api.service";
+import {
+  getData,
+  createChart,
+  deleteChart,
+  api,
+} from "../services/api.service";
 
 function Admin() {
   const [users, setUsers] = useState([]);
   const [error, setError] = useState(null);
   const [updateMessage, setUpdateMessage] = useState("");
   const [charts, setCharts] = useState([]);
-
+  const [items, setItems] = useState([]);
   const permissionLevels = ["user", "viewer", "basic admin", "full admin"];
-
+  const [keys, setKeys] = useState([]);
   useEffect(() => {
     fetchUsers();
     fetchCharts();
   }, []);
+  const [formKey, setFormKey] = useState(0);
 
   const fetchUsers = async () => {
     try {
@@ -70,6 +74,24 @@ function Admin() {
     }
   };
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getData();
+        setItems(data);
+
+        if (data.length > 0) {
+          setKeys(Object.keys(data[0]));
+          setFormKey((prev) => prev + 1);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setError("Failed to load items");
+      }
+    };
+    fetchData();
+  }, []);
+
   if (error) return <div className="alert alert-danger">{error}</div>;
 
   return (
@@ -121,6 +143,7 @@ function Admin() {
             <th>Name</th>
             <th>Type</th>
             <th>Input</th>
+            <th>Metric</th>
             <th>Action</th>
           </tr>
         </thead>
@@ -130,6 +153,7 @@ function Admin() {
               <td>{chart.name}</td>
               <td>{chart.type}</td>
               <td>{chart.input}</td>
+              <td>{chart.metric}</td>
               <td>
                 <button
                   className="btn btn-danger btn-sm"
@@ -144,11 +168,13 @@ function Admin() {
       </table>
       <h2>Create New Chart</h2>
       <GenericInputForm
+        key={formKey}
         onSubmit={createChart}
         initialData={{
           type: "bar",
           name: "",
           input: "items",
+          metric: keys.length > 0 ? keys[0] : "",
         }}
         fields={[
           {
@@ -164,6 +190,11 @@ function Admin() {
             name: "input",
             type: "select",
             options: ["items", "legacyData"],
+          },
+          {
+            name: "metric",
+            type: "select",
+            options: [...keys],
           },
         ]}
       />

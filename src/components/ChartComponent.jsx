@@ -18,7 +18,6 @@ import ChartSettings from "./ChartSettings";
 const initialState = {
   keys: [],
   chartData: [],
-  selectedKey: "",
   sortedDates: [],
   startDate: "",
   endDate: "",
@@ -33,8 +32,6 @@ function reducer(state, action) {
       return { ...state, keys: action.payload };
     case "set_chart_data":
       return { ...state, chartData: action.payload };
-    case "set_selected_key":
-      return { ...state, selectedKey: action.payload };
     case "set_sorted_dates":
       return { ...state, sortedDates: action.payload };
     case "set_start_date":
@@ -54,7 +51,7 @@ function reducer(state, action) {
   }
 }
 
-function ChartComponent({ inputData = [], chartType, title }) {
+function ChartComponent({ inputData = [], chartType, title, metric }) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const { authState } = useAuth();
@@ -100,16 +97,11 @@ function ChartComponent({ inputData = [], chartType, title }) {
   // Safe data processing for chart
   useEffect(() => {
     try {
-      if (
-        !state.selectedKey ||
-        !Array.isArray(inputData) ||
-        inputData.length === 0
-      )
-        return;
+      if (!Array.isArray(inputData) || inputData.length === 0) return;
 
       const data = Object.entries(
         inputData.reduce((acc, item) => {
-          const value = item[state.selectedKey];
+          const value = item[metric];
           if (value && typeof value !== "function") {
             // Prevent code injection
             const safeValue = String(value).slice(0, 100); // Limit string length
@@ -128,7 +120,7 @@ function ChartComponent({ inputData = [], chartType, title }) {
       dispatch({ type: "set_error", payload: "Error generating chart data" });
       console.error("Chart generation error:", err);
     }
-  }, [inputData, state.selectedKey]);
+  }, [inputData]);
 
   //gets the unique dates from the input data and sorts them
   useEffect(() => {
@@ -162,7 +154,7 @@ function ChartComponent({ inputData = [], chartType, title }) {
 
   //counts the number of submissions based on the selected key and the available dates and updates the chart data
   useEffect(() => {
-    if (!state.selectedKey || !state.startDate || !state.endDate) return;
+    if (!state.startDate || !state.endDate) return;
 
     const filteredData = inputData.filter((item) => {
       const itemDate = item.date || item.Date;
@@ -172,9 +164,8 @@ function ChartComponent({ inputData = [], chartType, title }) {
 
     const data = Object.entries(
       filteredData.reduce((acc, item) => {
-        if (item[state.selectedKey]) {
-          acc[item[state.selectedKey]] =
-            (acc[item[state.selectedKey]] || 0) + 1;
+        if (item[metric]) {
+          acc[item[metric]] = (acc[item[metric]] || 0) + 1;
         }
         return acc;
       }, {})
@@ -193,7 +184,6 @@ function ChartComponent({ inputData = [], chartType, title }) {
     }
   }, [
     inputData,
-    state.selectedKey,
     state.startDate,
     state.endDate,
     state.activeDates,
@@ -217,10 +207,6 @@ function ChartComponent({ inputData = [], chartType, title }) {
     }
 
     dispatch({ type: "set_active_dates", payload: dates });
-  }
-
-  function handleTypeChange(e) {
-    dispatch({ type: "set_selected_key", payload: e.target.value });
   }
 
   function handleStartDateChange(e) {
@@ -256,14 +242,11 @@ function ChartComponent({ inputData = [], chartType, title }) {
       {state.error && <div className="alert alert-danger">{state.error}</div>}
       <h2 className="mb-4 text-center">{title}</h2>
       <ChartSettings
-        keys={state.keys}
-        selectedKey={state.selectedKey}
         startDate={state.startDate}
         endDate={state.endDate}
         sortedDates={state.sortedDates}
         selectedFilter={state.selectedFilter}
         activeDates={state.activeDates}
-        onTypeChange={handleTypeChange}
         onStartDateChange={handleStartDateChange}
         onEndDateChange={handleEndDateChange}
         onFilterChange={handleFilterChange}
@@ -281,7 +264,7 @@ function ChartComponent({ inputData = [], chartType, title }) {
                 cy="50%"
                 outerRadius={100}
                 fill="#8884d8"
-                label={({ name }) => name}
+                label={({ key }) => key}
               >
                 {state.chartData.map((entry, index) => (
                   <Cell
@@ -303,7 +286,6 @@ function ChartComponent({ inputData = [], chartType, title }) {
               <Legend />
               <Bar dataKey="count" fill="#8884d8">
                 <LabelList
-                  dataKey="count"
                   position="top"
                   formatter={(value) =>
                     state.selectedFilter === "percentage" ? `${value}%` : value

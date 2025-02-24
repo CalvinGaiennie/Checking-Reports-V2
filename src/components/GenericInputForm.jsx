@@ -67,7 +67,7 @@ function GenericInputForm({ onSubmit, initialData, fields }) {
             )}
           </div>
         ))}
-        <button type="submit" className="btn btn-primary">
+        <button type="submit" className="btn btn-primary mt-3">
           Submit
         </button>
       </div>

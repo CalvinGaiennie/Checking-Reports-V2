@@ -97,7 +97,7 @@ function Display() {
             title={chart.name}
             inputData={dataSets[chart.input]}
             chartType={chart.type}
-            // defaultSettings={chart.defaultSettings}
+            metric={chart.metric}
           />
         ))}
       <div>
