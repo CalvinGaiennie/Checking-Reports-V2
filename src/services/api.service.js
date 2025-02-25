@@ -29,6 +29,7 @@ export const postData = async (data) => {
   }
 };
 
+//Users
 export const createUser = async (userData) => {
   try {
     console.log("Creating user:", userData);
@@ -53,11 +54,36 @@ export const loginUser = async (userData) => {
   }
 };
 
+//Forms
+export const createForm = async (formData) => {
+  try {
+    console.log("Creating form:", formData);
+    const response = await api.post("/forms", formData);
+    console.log("Server response:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error in createForm:", error);
+    throw error;
+  }
+};
+
+export const getForms = async () => {
+  try {
+    const response = await api.get("/forms");
+    return response.data;
+  } catch (error) {
+    console.error("Error in getForm:", error);
+    throw error;
+  }
+};
+
+//Charts
 export const getCharts = async () => {
   try {
     const response = await api.get("/charts");
     return response.data;
   } catch (error) {
+    console.error("Error in getChart:", error);
     throw error;
   }
 };

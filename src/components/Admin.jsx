@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import GenericInputForm from "./GenericInputForm";
 import {
   getData,
+  createForm,
   createChart,
   deleteChart,
   api,
@@ -166,38 +167,69 @@ function Admin() {
           ))}
         </tbody>
       </table>
-      <h2>Create New Chart</h2>
-      <GenericInputForm
-        key={formKey}
-        onSubmit={createChart}
-        initialData={{
-          type: "bar",
-          name: "",
-          input: "items",
-          metric: keys.length > 0 ? keys[0] : "",
-        }}
-        fields={[
-          {
-            name: "type",
-            type: "select",
-            options: ["bar", "pie"],
-          },
-          {
-            name: "name",
-            type: "text",
-          },
-          {
-            name: "input",
-            type: "select",
-            options: ["items", "legacyData"],
-          },
-          {
-            name: "metric",
-            type: "select",
-            options: [...keys],
-          },
-        ]}
-      />
+      <div>
+        <h2>Create New Chart</h2>
+        <GenericInputForm
+          key={formKey}
+          onSubmit={createChart}
+          initialData={{
+            type: "bar",
+            name: "",
+            input: "items",
+            metric: keys.length > 0 ? keys[0] : "",
+          }}
+          fields={[
+            {
+              name: "type",
+              type: "select",
+              options: ["bar", "pie"],
+            },
+            {
+              name: "name",
+              type: "text",
+            },
+            {
+              name: "input",
+              type: "select",
+              options: ["items", "legacyData"],
+            },
+            {
+              name: "metric",
+              type: "select",
+              options: [...keys],
+            },
+          ]}
+        />
+      </div>
+      <div>
+        <h2>Manage Forms</h2>
+        <table className="table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Chart 1</td>
+              <td>
+                {" "}
+                <button className="btn btn-danger btn-sm">Delete</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <h2>Create New Form</h2>
+        {/* <GenericInputForm
+          key={`${formKey} i`}
+          onSubmit={createForm}
+          initialDate={"variablestate"}
+          fields={"variablestate"}
+        /> */}
+      </div>
     </div>
   );
 }

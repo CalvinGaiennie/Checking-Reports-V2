@@ -74,10 +74,11 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model("User", userSchema);
 
-const inputSchema = new mongoose.Schema({
+const formSchema = new mongoose.Schema({
   type: String,
   name: String,
   required: Boolean,
+  inputs: { type: [String], default: [] },
 });
 
 const chartSchema = new mongoose.Schema({
@@ -210,6 +211,9 @@ app.patch("/api/users/:userId/permissions", async (req, res) => {
       .json({ success: false, message: "Failed to update permissions" });
   }
 });
+
+///////////////////////////
+// Form Routes
 
 ///////////////////////////
 // Chart Routes
