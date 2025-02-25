@@ -7,6 +7,7 @@ import {
   deleteChart,
   api,
 } from "../services/api.service";
+import Select from "./Select";
 
 function Admin() {
   const [users, setUsers] = useState([]);
@@ -14,8 +15,14 @@ function Admin() {
   const [updateMessage, setUpdateMessage] = useState("");
   const [charts, setCharts] = useState([]);
   const [items, setItems] = useState([]);
-  const permissionLevels = ["user", "viewer", "basic admin", "full admin"];
+  const [inputFields, setInputFields] = useState([]);
+  const [inputType, setInputType] = useState("input");
+  const [inputTitle, setInputTitle] = useState("name");
+  const [inputOptions, setInputOptions] = useState([]);
+  const [formOptionNumber, setFormOptionNumber] = useState([]);
   const [keys, setKeys] = useState([]);
+  const permissionLevels = ["user", "viewer", "basic admin", "full admin"];
+
   useEffect(() => {
     fetchUsers();
     fetchCharts();
@@ -74,6 +81,26 @@ function Admin() {
       console.error("Error deleting chart:", error);
     }
   };
+
+  function handleInputTypeChange(e) {
+    setInputType(e.target.value);
+  }
+  function handleInputTitleChange(e) {
+    setInputTitle(e.target.value);
+  }
+  function handleAddInputOption(e) {
+    setInputOptions([...inputOptions, e.target.value]);
+  }
+
+  function handleInputAdd() {
+    const currentInputFields = inputFields;
+    const currentInputSchema = {
+      name: inputTitle,
+      type: inputType,
+      options: [],
+    };
+    setInputFields([...currentInputFields, currentInputSchema]);
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -221,14 +248,38 @@ function Admin() {
           </tbody>
         </table>
       </div>
-      <div>
+
+      {/* I should probably seperate this out into its own component and use use reducer in this admin file.
+      its getting real complicated and harder to follow than it should be */}
+      <div className="mb-5">
         <h2>Create New Form</h2>
-        {/* <GenericInputForm
+        <GenericInputForm
           key={`${formKey} i`}
           onSubmit={createForm}
-          initialDate={"variablestate"}
-          fields={"variablestate"}
-        /> */}
+          fields={inputFields}
+        />
+        <h3>Add New Input</h3>
+        <h3>Input Title</h3>
+        <input className="form-control" onChange={handleInputTitleChange} />
+        <Select
+          title="Input Type"
+          onChange={handleInputTypeChange}
+          value={inputType}
+          options={["input", "select"]}
+        />
+        {inputType === "select" &&
+          formOptionNumber.map(() => (
+            <div key={`${formKey}option`}>
+              <h3>Option</h3>
+              <input
+                className="form-control mb-4"
+                onChange={(e) => handleAddInputOption(e)}
+              />
+            </div>
+          ))}
+        <button className="mt-4" onClick={handleInputAdd}>
+          Add
+        </button>
       </div>
     </div>
   );
