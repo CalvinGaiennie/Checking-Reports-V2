@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useReducer, useEffect } from "react";
 import GenericInputForm from "./GenericInputForm";
 import {
   getData,
@@ -9,7 +9,57 @@ import {
 } from "../services/api.service";
 import Select from "./Select";
 
+const initialState = {
+  users: [],
+  charts: [],
+  items: [],
+  inputFields: [],
+  inputType: "input",
+  inputTitle: "name",
+  inputOptions: [],
+  formOptionNumber: [],
+  keys: [],
+  formKey: 0,
+  error: null,
+  updateMessage: "",
+  permissionLevels: ["user", "viewer", "basic admin", "full admin"],
+};
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case "setUsers":
+      return { ...state, users: action.payload };
+    case "setCharts":
+      return { ...state, charts: action.payload };
+    case "setItems":
+      return { ...state, items: action.payload };
+    case "setInputFields":
+      return { ...state, inputFields: action.payload };
+    case "setInputType":
+      return { ...state, inputType: action.payload };
+    case "setInputTitle":
+      return { ...state, inputTitle: action.payload };
+    case "setInputOptions":
+      return { ...state, inputOptions: action.payload };
+    case "setFormOptionNumber":
+      return { ...state, formOptionNumber: action.payload };
+    case "setKeys":
+      return { ...state, keys: action.payload };
+    case "setError":
+      return { ...state, error: action.payload };
+    case "setUpdateMessage":
+      return { ...state, updateMessage: action.payload };
+    case "setFormKey":
+      return { ...state, formKey: state.formKey + 1 };
+    default:
+      return state;
+  }
+};
+//This file is getting too large. I need to seperate out components. Starting with the form builder.
+
 function Admin() {
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const [formKey, setFormKey] = useState(0);
   const [users, setUsers] = useState([]);
   const [error, setError] = useState(null);
   const [updateMessage, setUpdateMessage] = useState("");
@@ -27,7 +77,6 @@ function Admin() {
     fetchUsers();
     fetchCharts();
   }, []);
-  const [formKey, setFormKey] = useState(0);
 
   const fetchUsers = async () => {
     try {
@@ -110,6 +159,7 @@ function Admin() {
 
         if (data.length > 0) {
           setKeys(Object.keys(data[0]));
+          dispatch({ type: "setFormKey" });
           setFormKey((prev) => prev + 1);
         }
       } catch (error) {
@@ -269,7 +319,7 @@ function Admin() {
         />
         {inputType === "select" &&
           formOptionNumber.map(() => (
-            <div key={`${formKey}option`}>
+            <div key={`${state.formKey}option`}>
               <h3>Option</h3>
               <input
                 className="form-control mb-4"
