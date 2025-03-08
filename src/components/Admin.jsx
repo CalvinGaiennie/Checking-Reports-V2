@@ -60,13 +60,8 @@ const reducer = (state, action) => {
 function Admin() {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [formKey, setFormKey] = useState(0);
-  const [users, setUsers] = useState([]);
-  const [error, setError] = useState(null);
   const [updateMessage, setUpdateMessage] = useState("");
-  const [charts, setCharts] = useState([]);
   const [items, setItems] = useState([]);
-  const [inputFields, setInputFields] = useState([]);
-  const [inputType, setInputType] = useState("input");
   const [inputTitle, setInputTitle] = useState("name");
   const [inputOptions, setInputOptions] = useState([]);
   const [formOptionNumber, setFormOptionNumber] = useState([]);
@@ -77,22 +72,21 @@ function Admin() {
     fetchUsers();
     fetchCharts();
   }, []);
-
   const fetchUsers = async () => {
     try {
       const response = await api.get("/users");
-      setUsers(response.data);
+      dispatch({ type: "setUsers", payload: response.data });
     } catch (err) {
-      setError(err.message);
+      dispatch({ type: "setError", payload: err.message });
     }
   };
 
   const fetchCharts = async () => {
     try {
       const response = await api.get("/charts");
-      setCharts(response.data);
+      dispatch({ type: "setCharts", payload: response.data });
     } catch (err) {
-      setError(err.message);
+      dispatch({ type: "setError", payload: err.message });
     }
   };
 
@@ -104,15 +98,14 @@ function Admin() {
 
       if (response.data.success) {
         setUpdateMessage("Permissions updated successfully!");
-        setUsers(
-          users.map((user) =>
-            user._id === userId ? { ...user, permissions: newPermission } : user
-          )
+        const currentUsers = state.users.map((user) =>
+          user._id === userId ? { ...user, permissions: newPermission } : user
         );
+        dispatch({ type: "setUsers", payload: currentUsers });
         setTimeout(() => setUpdateMessage(""), 3000);
       }
     } catch (error) {
-      setError("Failed to update permissions");
+      dispatch({ type: "setError", payload: "Failed to update permissions" });
       console.error("Error updating permissions:", error);
     }
   };
@@ -126,13 +119,13 @@ function Admin() {
       setTimeout(() => setUpdateMessage(""), 3000);
     } catch (error) {
       console.error("Chart ID that failed:", chartId);
-      setError("Failed to delete chart");
+      dispatch({ type: "setError", payload: "Failed to delete chart" });
       console.error("Error deleting chart:", error);
     }
   };
 
   function handleInputTypeChange(e) {
-    setInputType(e.target.value);
+    dispatch({ type: "setInputType", payload: e.target.value });
   }
   function handleInputTitleChange(e) {
     setInputTitle(e.target.value);
@@ -142,13 +135,15 @@ function Admin() {
   }
 
   function handleInputAdd() {
-    const currentInputFields = inputFields;
     const currentInputSchema = {
       name: inputTitle,
-      type: inputType,
+      type: state.inputType,
       options: [],
     };
-    setInputFields([...currentInputFields, currentInputSchema]);
+    dispatch({
+      type: "setInputFields",
+      payload: [...state.inputFields, currentInputSchema],
+    });
   }
 
   useEffect(() => {
@@ -164,13 +159,14 @@ function Admin() {
         }
       } catch (error) {
         console.error("Error fetching data:", error);
-        setError("Failed to load items");
+        dispatch({ type: "setError", payload: "Failed to load items" });
       }
     };
     fetchData();
   }, []);
 
-  if (error) return <div className="alert alert-danger">{error}</div>;
+  if (state.error)
+    return <div className="alert alert-danger">{state.error}</div>;
 
   return (
     <div className="container mt-4">
@@ -190,7 +186,7 @@ function Admin() {
           </tr>
         </thead>
         <tbody>
-          {users.map((user) => (
+          {state.users.map((user) => (
             <tr key={user._id}>
               <td>{user.name}</td>
               <td>{user.username}</td>
@@ -226,7 +222,7 @@ function Admin() {
           </tr>
         </thead>
         <tbody>
-          {charts.map((chart) => (
+          {state.charts.map((chart) => (
             <tr key={chart._id}>
               <td>{chart.name}</td>
               <td>{chart.type}</td>
@@ -306,7 +302,7 @@ function Admin() {
         <GenericInputForm
           key={`${formKey} i`}
           onSubmit={createForm}
-          fields={inputFields}
+          fields={state.inputFields}
         />
         <h3>Add New Input</h3>
         <h3>Input Title</h3>
@@ -314,10 +310,10 @@ function Admin() {
         <Select
           title="Input Type"
           onChange={handleInputTypeChange}
-          value={inputType}
+          value={state.inputType}
           options={["input", "select"]}
         />
-        {inputType === "select" &&
+        {state.inputType === "select" &&
           formOptionNumber.map(() => (
             <div key={`${state.formKey}option`}>
               <h3>Option</h3>
