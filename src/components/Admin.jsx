@@ -8,6 +8,7 @@ import {
   api,
 } from "../services/api.service";
 import Select from "./Select";
+import CreateNewForm from "./CreateNewForm";
 
 const initialState = {
   users: [],
@@ -59,13 +60,6 @@ const reducer = (state, action) => {
 
 function Admin() {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const [formKey, setFormKey] = useState(0);
-  const [updateMessage, setUpdateMessage] = useState("");
-  const [items, setItems] = useState([]);
-  const [inputTitle, setInputTitle] = useState("name");
-  const [inputOptions, setInputOptions] = useState([]);
-  const [formOptionNumber, setFormOptionNumber] = useState([]);
-  const [keys, setKeys] = useState([]);
   const permissionLevels = ["user", "viewer", "basic admin", "full admin"];
 
   useEffect(() => {
@@ -97,12 +91,18 @@ function Admin() {
       });
 
       if (response.data.success) {
-        setUpdateMessage("Permissions updated successfully!");
+        dispatch({
+          type: "setUpdateMessage",
+          payload: "Permissions updated successfully!",
+        });
         const currentUsers = state.users.map((user) =>
           user._id === userId ? { ...user, permissions: newPermission } : user
         );
         dispatch({ type: "setUsers", payload: currentUsers });
-        setTimeout(() => setUpdateMessage(""), 3000);
+        setTimeout(
+          () => dispatch({ type: "setUpdateMessage", payload: "" }),
+          3000
+        );
       }
     } catch (error) {
       dispatch({ type: "setError", payload: "Failed to update permissions" });
@@ -115,8 +115,15 @@ function Admin() {
       console.log("Attempting to delete chart with ID:", chartId);
       await deleteChart(chartId);
       await fetchCharts();
-      setUpdateMessage("Chart deleted successfully!");
-      setTimeout(() => setUpdateMessage(""), 3000);
+
+      dispatch({
+        type: "setUpdateMessage",
+        payload: "Chart deleted successfully!",
+      });
+      setTimeout(
+        () => dispatch({ type: "setUpdateMessage", payload: "" }),
+        3000
+      );
     } catch (error) {
       console.error("Chart ID that failed:", chartId);
       dispatch({ type: "setError", payload: "Failed to delete chart" });
@@ -128,15 +135,18 @@ function Admin() {
     dispatch({ type: "setInputType", payload: e.target.value });
   }
   function handleInputTitleChange(e) {
-    setInputTitle(e.target.value);
+    dispatch({ type: "setInputTitle", payload: e.target.value });
   }
   function handleAddInputOption(e) {
-    setInputOptions([...inputOptions, e.target.value]);
+    dispatch({
+      type: "setInputOptions",
+      payload: [...state.inputOptions, e.target.value],
+    });
   }
 
   function handleInputAdd() {
     const currentInputSchema = {
-      name: inputTitle,
+      name: state.inputTitle,
       type: state.inputType,
       options: [],
     };
@@ -150,12 +160,11 @@ function Admin() {
     const fetchData = async () => {
       try {
         const data = await getData();
-        setItems(data);
+        dispatch({ type: "setItems", payload: data });
 
         if (data.length > 0) {
-          setKeys(Object.keys(data[0]));
+          dispatch({ type: "setKeys", payload: Object.keys(data[0]) });
           dispatch({ type: "setFormKey" });
-          setFormKey((prev) => prev + 1);
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -171,9 +180,10 @@ function Admin() {
   return (
     <div className="container mt-4">
       <h2>User Accounts</h2>
-      {updateMessage && (
+      <hr></hr>
+      {state.updateMessage && (
         <div className="alert alert-success" role="alert">
-          {updateMessage}
+          {state.updateMessage}
         </div>
       )}
       <table className="table">
@@ -211,6 +221,7 @@ function Admin() {
         </tbody>
       </table>
       <h2>Manage Charts</h2>
+      <hr></hr>
       <table className="table">
         <thead>
           <tr>
@@ -242,14 +253,15 @@ function Admin() {
       </table>
       <div>
         <h2>Create New Chart</h2>
+        <hr></hr>
         <GenericInputForm
-          key={formKey}
+          key={state.formKey}
           onSubmit={createChart}
           initialData={{
             type: "bar",
             name: "",
             input: "items",
-            metric: keys.length > 0 ? keys[0] : "",
+            metric: state.keys.length > 0 ? state.keys[0] : "",
           }}
           fields={[
             {
@@ -269,13 +281,14 @@ function Admin() {
             {
               name: "metric",
               type: "select",
-              options: [...keys],
+              options: [...state.keys],
             },
           ]}
         />
       </div>
       <div>
         <h2>Manage Forms</h2>
+        <hr></hr>
         <table className="table">
           <thead>
             <tr>
@@ -294,39 +307,14 @@ function Admin() {
           </tbody>
         </table>
       </div>
-
-      {/* I should probably seperate this out into its own component and use use reducer in this admin file.
-      its getting real complicated and harder to follow than it should be */}
-      <div className="mb-5">
-        <h2>Create New Form</h2>
-        <GenericInputForm
-          key={`${formKey} i`}
-          onSubmit={createForm}
-          fields={state.inputFields}
-        />
-        <h3>Add New Input</h3>
-        <h3>Input Title</h3>
-        <input className="form-control" onChange={handleInputTitleChange} />
-        <Select
-          title="Input Type"
-          onChange={handleInputTypeChange}
-          value={state.inputType}
-          options={["input", "select"]}
-        />
-        {state.inputType === "select" &&
-          formOptionNumber.map(() => (
-            <div key={`${state.formKey}option`}>
-              <h3>Option</h3>
-              <input
-                className="form-control mb-4"
-                onChange={(e) => handleAddInputOption(e)}
-              />
-            </div>
-          ))}
-        <button className="mt-4" onClick={handleInputAdd}>
-          Add
-        </button>
-      </div>
+      <CreateNewForm
+        state={state}
+        createForm={createForm}
+        handleInputTitleChange={handleInputTitleChange}
+        handleInputTypeChange={handleInputTypeChange}
+        handleAddInputOption={handleAddInputOption}
+        handleInputAdd={handleInputAdd}
+      />
     </div>
   );
 }
