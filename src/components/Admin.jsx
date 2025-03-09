@@ -7,8 +7,9 @@ import {
   deleteChart,
   api,
 } from "../services/api.service";
-import Select from "./Select";
 import CreateNewForm from "./CreateNewForm";
+import ManageChartsTable from "./ManageChartsTable";
+import UserAccountsTable from "./UserAccountsTable";
 
 const initialState = {
   users: [],
@@ -37,7 +38,11 @@ const reducer = (state, action) => {
     case "setInputFields":
       return { ...state, inputFields: action.payload };
     case "setInputType":
-      return { ...state, inputType: action.payload };
+      return {
+        ...state,
+        inputType: action.payload,
+        formOptionNumber: action.payload === "select" ? [0] : [],
+      };
     case "setInputTitle":
       return { ...state, inputTitle: action.payload };
     case "setInputOptions":
@@ -132,7 +137,10 @@ function Admin() {
   };
 
   function handleInputTypeChange(e) {
-    dispatch({ type: "setInputType", payload: e.target.value });
+    dispatch({
+      type: "setInputType",
+      payload: e.target.value,
+    });
   }
   function handleInputTitleChange(e) {
     dispatch({ type: "setInputTitle", payload: e.target.value });
@@ -179,78 +187,12 @@ function Admin() {
 
   return (
     <div className="container mt-4">
-      <h2>User Accounts</h2>
-      <hr></hr>
-      {state.updateMessage && (
-        <div className="alert alert-success" role="alert">
-          {state.updateMessage}
-        </div>
-      )}
-      <table className="table">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Username</th>
-            <th>Permissions</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {state.users.map((user) => (
-            <tr key={user._id}>
-              <td>{user.name}</td>
-              <td>{user.username}</td>
-              <td>{user.permissions || "user"}</td>
-              <td>
-                <select
-                  className="form-select"
-                  value={user.permissions || "user"}
-                  onChange={(e) =>
-                    handlePermissionChange(user._id, e.target.value)
-                  }
-                >
-                  {permissionLevels.map((level) => (
-                    <option key={level} value={level}>
-                      {level}
-                    </option>
-                  ))}
-                </select>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <h2>Manage Charts</h2>
-      <hr></hr>
-      <table className="table">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Input</th>
-            <th>Metric</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {state.charts.map((chart) => (
-            <tr key={chart._id}>
-              <td>{chart.name}</td>
-              <td>{chart.type}</td>
-              <td>{chart.input}</td>
-              <td>{chart.metric}</td>
-              <td>
-                <button
-                  className="btn btn-danger btn-sm"
-                  onClick={() => handleDeleteChart(chart._id)}
-                >
-                  Delete
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <UserAccountsTable
+        state={state}
+        handlePermissionChange={handlePermissionChange}
+        permissionLevels={permissionLevels}
+      />
+      <ManageChartsTable state={state} handleDeleteChart={handleDeleteChart} />
       <div>
         <h2>Create New Chart</h2>
         <hr></hr>

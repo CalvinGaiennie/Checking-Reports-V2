@@ -8,6 +8,7 @@ function CreateNewForm({
   handleInputTypeChange,
   handleAddInputOption,
   handleInputAdd,
+  dispatch,
 }) {
   return (
     <div className="mb-5">
@@ -28,16 +29,33 @@ function CreateNewForm({
         value={state.inputType}
         options={["input", "select"]}
       />
-      {state.inputType === "select" &&
-        state.formOptionNumber.map(() => (
-          <div key={`${state.formKey}option`}>
-            <h3>Option</h3>
-            <input
-              className="form-control mb-4"
-              onChange={(e) => handleAddInputOption(e)}
-            />
-          </div>
-        ))}
+      {state.inputType === "select" && (
+        <>
+          {state.formOptionNumber.map((_, index) => (
+            <div key={`${state.formKey}option${index}`}>
+              <h3>Option {index + 1}</h3>
+              <input
+                className="form-control mb-4"
+                onChange={(e) => handleAddInputOption(e)}
+              />
+            </div>
+          ))}
+          <button
+            className="btn btn-secondary"
+            onClick={() =>
+              dispatch({
+                type: "setFormOptionNumber",
+                payload: [
+                  ...state.formOptionNumber,
+                  state.formOptionNumber.length,
+                ],
+              })
+            }
+          >
+            Add Another Option
+          </button>
+        </>
+      )}
       <button className="mt-4" onClick={handleInputAdd}>
         Add
       </button>
