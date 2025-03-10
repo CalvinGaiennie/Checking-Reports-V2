@@ -1,6 +1,12 @@
 import { useState } from "react";
 
-function GenericInputForm({ onSubmit, initialData, fields }) {
+function GenericInputForm({
+  onSubmit,
+  initialData,
+  fields,
+  parentName,
+  state,
+}) {
   const [formData, setFormData] = useState(
     initialData || {
       type: "bar",
@@ -8,6 +14,7 @@ function GenericInputForm({ onSubmit, initialData, fields }) {
       input: "items",
     }
   );
+  console.log("fields", fields, "parent name", parentName);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -37,14 +44,14 @@ function GenericInputForm({ onSubmit, initialData, fields }) {
     <form className="container mt-4" onSubmit={handleSubmit}>
       <div className="mb-3">
         {fields.map((field) => (
-          <div key={field.name}>
+          <div key={`${field.name}a`}>
             <label className="form-label">
               {field.name.charAt(0).toUpperCase() + field.name.slice(1)}
             </label>
             {field.type === "select" ? (
               <select
                 name={field.name.toLowerCase()}
-                className="form-control"
+                className="form-select"
                 value={formData[field.name.toLowerCase()] || ""}
                 onChange={handleChange}
                 required

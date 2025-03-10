@@ -25,6 +25,7 @@ const initialState = {
   error: null,
   updateMessage: "",
   permissionLevels: ["user", "viewer", "basic admin", "full admin"],
+  currentFormName: "",
 };
 
 const reducer = (state, action) => {
@@ -57,6 +58,8 @@ const reducer = (state, action) => {
       return { ...state, updateMessage: action.payload };
     case "setFormKey":
       return { ...state, formKey: state.formKey + 1 };
+    case "setCurrentFormName":
+      return { ...state, currentFormName: action.payload };
     default:
       return state;
   }
@@ -156,12 +159,16 @@ function Admin() {
     const currentInputSchema = {
       name: state.inputTitle,
       type: state.inputType,
-      options: [],
+      options: state.inputOptions,
     };
     dispatch({
       type: "setInputFields",
       payload: [...state.inputFields, currentInputSchema],
     });
+  }
+
+  function handleSaveForm() {
+    //I need to set up a route here to send the forms to the DB.
   }
 
   useEffect(() => {
@@ -256,6 +263,7 @@ function Admin() {
         handleInputTypeChange={handleInputTypeChange}
         handleAddInputOption={handleAddInputOption}
         handleInputAdd={handleInputAdd}
+        dispatch={dispatch}
       />
     </div>
   );
