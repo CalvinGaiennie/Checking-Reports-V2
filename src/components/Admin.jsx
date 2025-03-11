@@ -16,6 +16,7 @@ const initialState = {
   charts: [],
   items: [],
   inputFields: [],
+  currentInputDescription: "",
   inputType: "input",
   inputTitle: "name",
   inputOptions: [],
@@ -25,6 +26,7 @@ const initialState = {
   error: null,
   updateMessage: "",
   permissionLevels: ["user", "viewer", "basic admin", "full admin"],
+  currentInputRequiredBool: false,
   currentFormName: "",
 };
 
@@ -60,6 +62,10 @@ const reducer = (state, action) => {
       return { ...state, formKey: state.formKey + 1 };
     case "setCurrentFormName":
       return { ...state, currentFormName: action.payload };
+    case "setCurrentInputDescription":
+      return { ...state, currentInputDescription: action.payload };
+    case "setCurrentInputRequiredBool":
+      return { ...state, currentInputRequiredBool: action.payload };
     default:
       return state;
   }
@@ -158,8 +164,10 @@ function Admin() {
   function handleInputAdd() {
     const currentInputSchema = {
       name: state.inputTitle,
+      description: state.currentInputDescription,
       type: state.inputType,
       options: state.inputOptions,
+      required: state.currentInputRequiredBool,
     };
     dispatch({
       type: "setInputFields",
@@ -169,6 +177,7 @@ function Admin() {
 
   function handleSaveForm() {
     //I need to set up a route here to send the forms to the DB.
+    console.log("state.inputFields", state.inputFields);
   }
 
   useEffect(() => {
@@ -264,6 +273,7 @@ function Admin() {
         handleAddInputOption={handleAddInputOption}
         handleInputAdd={handleInputAdd}
         dispatch={dispatch}
+        handleSaveForm={handleSaveForm}
       />
     </div>
   );
