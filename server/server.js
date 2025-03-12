@@ -75,11 +75,16 @@ const userSchema = new mongoose.Schema({
 const User = mongoose.model("User", userSchema);
 
 const formSchema = new mongoose.Schema({
-  type: String,
-  name: String,
-  required: Boolean,
-  description: String,
-  options: { type: [String], default: [] },
+  name: { type: String, required: true },
+  fields: [
+    {
+      name: String,
+      type: String,
+      description: String,
+      options: [String],
+      required: Boolean,
+    },
+  ],
 });
 
 const chartSchema = new mongoose.Schema({
@@ -90,6 +95,8 @@ const chartSchema = new mongoose.Schema({
 });
 
 const Chart = mongoose.model("Chart", chartSchema);
+
+const Form = mongoose.model("Form", formSchema);
 
 // Routes
 /////////////////////////
@@ -217,18 +224,21 @@ app.patch("/api/users/:userId/permissions", async (req, res) => {
 // Form Routes
 app.post("/api/forms", async (req, res) => {
   try {
-    const { name } = req.body;
+    const { name, fields } = req.body;
 
     const existingForm = await Form.findOne({ name });
     if (existingForm) {
       return res.status(400).json({ message: "Form name already exists." });
     }
 
-    const form = new Form({ name });
+    const form = new Form({
+      name,
+      fields,
+    });
     const savedForm = await form.save();
     res.status(201).json(savedForm);
   } catch (error) {
-    console.error("Error updating permissions:", error);
+    console.error("Error creating form:", error);
     res.status(500).json({ message: error.message });
   }
 });

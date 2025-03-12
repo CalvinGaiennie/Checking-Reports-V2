@@ -175,9 +175,46 @@ function Admin() {
     });
   }
 
-  function handleSaveForm() {
-    //I need to set up a route here to send the forms to the DB.
-    console.log("state.inputFields", state.inputFields);
+  async function handleSaveForm() {
+    try {
+      if (!state.currentFormName) {
+        dispatch({ type: "setError", payload: "Form name is required" });
+        return;
+      }
+
+      if (state.inputFields.length === 0) {
+        dispatch({
+          type: "setError",
+          payload: "Form must have at least one field",
+        });
+        return;
+      }
+
+      const payload = {
+        name: state.currentFormName,
+        fields: state.inputFields,
+      };
+      await createForm(payload);
+
+      // Clear form after successful save
+      dispatch({ type: "setInputFields", payload: [] });
+      dispatch({ type: "setCurrentFormName", payload: "" });
+      dispatch({
+        type: "setUpdateMessage",
+        payload: "Form saved successfully!",
+      });
+
+      setTimeout(
+        () => dispatch({ type: "setUpdateMessage", payload: "" }),
+        3000
+      );
+    } catch (error) {
+      console.error("Error saving form:", error);
+      dispatch({
+        type: "setError",
+        payload: error.response?.data?.message || "Error saving form",
+      });
+    }
   }
 
   useEffect(() => {

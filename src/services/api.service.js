@@ -109,3 +109,14 @@ export const deleteChart = async (chartId) => {
     throw error;
   }
 };
+
+//Forms
+export const getForm = async (formId) => {
+  try {
+    const response = await api.get("/forms/" + formId);
+    return response.data;
+  } catch (error) {
+    console.error("Error in getForm:", error);
+    throw error;
+  }
+};
