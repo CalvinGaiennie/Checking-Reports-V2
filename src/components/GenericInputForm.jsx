@@ -43,8 +43,8 @@ function GenericInputForm({
   return (
     <form className="container mt-4" onSubmit={handleSubmit}>
       <div className="mb-3">
-        {fields.map((field) => (
-          <div key={`${field.name}a`}>
+        {fields.map((field, index) => (
+          <div key={`${field.name}-${index}`}>
             <label className="form-label">
               {field.name.charAt(0).toUpperCase() + field.name.slice(1)}
             </label>

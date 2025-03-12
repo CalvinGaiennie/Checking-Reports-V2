@@ -13,6 +13,7 @@ export const getData = async () => {
     const response = await api.get("/items");
     return response.data;
   } catch (error) {
+    console.error("Failed to fetch items:", error);
     throw error;
   }
 };

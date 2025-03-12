@@ -78,11 +78,11 @@ const formSchema = new mongoose.Schema({
   name: { type: String, required: true },
   fields: [
     {
-      name: String,
-      type: String,
-      description: String,
-      options: [String],
-      required: Boolean,
+      name: { type: String, required: true },
+      description: { type: String, default: "" },
+      type: { type: String, required: true },
+      options: { type: [String], default: [] },
+      required: { type: Boolean, default: false },
     },
   ],
 });
@@ -225,20 +225,32 @@ app.patch("/api/users/:userId/permissions", async (req, res) => {
 app.post("/api/forms", async (req, res) => {
   try {
     const { name, fields } = req.body;
+    console.log("Received form data:", { name, fields }); // Debug log
 
     const existingForm = await Form.findOne({ name });
     if (existingForm) {
       return res.status(400).json({ message: "Form name already exists." });
     }
 
+    // Create new form with properly structured data
     const form = new Form({
       name,
-      fields,
+      fields: fields.map((field) => ({
+        name: field.name,
+        description: field.description || "",
+        type: field.type,
+        options: field.options || [],
+        required: field.required || false,
+      })),
     });
+
+    console.log("Form object before save:", form); // Add this line
     const savedForm = await form.save();
+    console.log("Saved form:", savedForm); // Debug log
     res.status(201).json(savedForm);
   } catch (error) {
-    console.error("Error creating form:", error);
+    console.error("Detailed error in form creation:", error); // Enhanced error logging
+    console.error("Error stack trace:", error.stack); // Add stack trace
     res.status(500).json({ message: error.message });
   }
 });
