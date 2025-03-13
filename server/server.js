@@ -222,17 +222,39 @@ app.patch("/api/users/:userId/permissions", async (req, res) => {
 
 ///////////////////////////
 // Form Routes
+
+app.get("/api/forms", async (req, res) => {
+  try {
+    console.log("[Server] GET /api/forms - Fetching all forms");
+    console.log(
+      "[Server] MongoDB connection state:",
+      mongoose.connection.readyState
+    );
+    const forms = await Form.find();
+    console.log("[Server] Found forms:", forms);
+    res.json(forms);
+  } catch (error) {
+    console.error("[Server] Error fetching forms:", error);
+    res.status(500).json({ message: error.message });
+  }
+});
+
 app.post("/api/forms", async (req, res) => {
   try {
     const { name, fields } = req.body;
-    console.log("Received form data:", { name, fields }); // Debug log
+    console.log("[Server] POST /api/forms - Creating new form");
+    console.log(
+      "[Server] MongoDB connection state:",
+      mongoose.connection.readyState
+    );
+    console.log("[Server] Received form data:", { name, fields });
 
     const existingForm = await Form.findOne({ name });
     if (existingForm) {
+      console.log("[Server] Form name already exists:", name);
       return res.status(400).json({ message: "Form name already exists." });
     }
 
-    // Create new form with properly structured data
     const form = new Form({
       name,
       fields: fields.map((field) => ({
@@ -244,13 +266,13 @@ app.post("/api/forms", async (req, res) => {
       })),
     });
 
-    console.log("Form object before save:", form); // Add this line
+    console.log("[Server] Form object before save:", form);
     const savedForm = await form.save();
-    console.log("Saved form:", savedForm); // Debug log
+    console.log("[Server] Successfully saved form:", savedForm);
     res.status(201).json(savedForm);
   } catch (error) {
-    console.error("Detailed error in form creation:", error); // Enhanced error logging
-    console.error("Error stack trace:", error.stack); // Add stack trace
+    console.error("[Server] Error creating form:", error);
+    console.error("[Server] Error stack trace:", error.stack);
     res.status(500).json({ message: error.message });
   }
 });

@@ -58,22 +58,31 @@ export const loginUser = async (userData) => {
 //Forms
 export const createForm = async (formData) => {
   try {
-    console.log("Creating form:", formData);
+    console.log("[API Service] Attempting to create form with data:", formData);
     const response = await api.post("/forms", formData);
-    console.log("Server response:", response.data);
+    console.log(
+      "[API Service] Server response for form creation:",
+      response.data
+    );
     return response.data;
   } catch (error) {
-    console.error("Error in createForm:", error);
+    console.error("[API Service] Error in createForm:", error);
+    console.error("[API Service] Error details:", error.response?.data);
     throw error;
   }
 };
 
 export const getForms = async () => {
   try {
+    console.log("[API Service] Fetching forms from:", `${API_BASE_URL}/forms`);
+    console.log("[API Service] Full config:", api.defaults);
     const response = await api.get("/forms");
+    console.log("[API Service] Retrieved forms:", response.data);
     return response.data;
   } catch (error) {
-    console.error("Error in getForm:", error);
+    console.error("[API Service] Error in getForms:", error);
+    console.error("[API Service] Error details:", error.response?.data);
+    console.error("[API Service] Request config:", error.config);
     throw error;
   }
 };

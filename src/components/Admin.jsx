@@ -155,6 +155,8 @@ function Admin() {
     dispatch({ type: "setInputTitle", payload: e.target.value });
   }
   function handleAddInputOption(e) {
+    console.log("Adding option:", e.target.value);
+    console.log("Current options:", state.inputOptions);
     dispatch({
       type: "setInputOptions",
       payload: [...state.inputOptions, e.target.value],
@@ -169,6 +171,8 @@ function Admin() {
       options: state.inputOptions,
       required: state.currentInputRequiredBool,
     };
+    console.log("[Admin] Adding new field:", currentInputSchema);
+    console.log("[Admin] Current input fields:", state.inputFields);
     dispatch({
       type: "setInputFields",
       payload: [...state.inputFields, currentInputSchema],
@@ -177,12 +181,15 @@ function Admin() {
 
   async function handleSaveForm() {
     try {
+      console.log("[Admin] Starting form save process");
       if (!state.currentFormName) {
+        console.log("[Admin] Form save failed: Name required");
         dispatch({ type: "setError", payload: "Form name is required" });
         return;
       }
 
       if (state.inputFields.length === 0) {
+        console.log("[Admin] Form save failed: No fields");
         dispatch({
           type: "setError",
           payload: "Form must have at least one field",
@@ -194,7 +201,11 @@ function Admin() {
         name: state.currentFormName,
         fields: state.inputFields,
       };
-      await createForm(payload);
+      console.log("[Admin] Attempting to save form with payload:", payload);
+      console.log("[Admin] Current state:", state);
+
+      const savedForm = await createForm(payload);
+      console.log("[Admin] Form saved successfully:", savedForm);
 
       // Clear form after successful save
       dispatch({ type: "setInputFields", payload: [] });
@@ -209,7 +220,7 @@ function Admin() {
         3000
       );
     } catch (error) {
-      console.error("Error saving form:", error);
+      console.error("[Admin] Error saving form:", error);
       dispatch({
         type: "setError",
         payload: error.response?.data?.message || "Error saving form",

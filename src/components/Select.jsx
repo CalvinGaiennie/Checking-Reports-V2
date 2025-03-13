@@ -1,6 +1,6 @@
-function Select({ options, value, onChange, title }) {
+function Select({ options, value, onChange, title, className }) {
   return (
-    <div>
+    <div className={className}>
       <h3>{title}</h3>
       <select onChange={onChange} value={value} className="form-select">
         {options.map((option) => (
