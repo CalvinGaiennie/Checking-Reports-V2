@@ -257,9 +257,9 @@ function Admin() {
         permissionLevels={permissionLevels}
       />
       <ManageChartsTable state={state} handleDeleteChart={handleDeleteChart} />
-      <div>
+      <div className="mb-5 border rounded p-4">
         <h2>Create New Chart</h2>
-        <hr></hr>
+        <hr />
         <GenericInputForm
           key={state.formKey}
           onSubmit={createChart}
@@ -292,9 +292,9 @@ function Admin() {
           ]}
         />
       </div>
-      <div>
+      <div className="mb-5 border rounded p-4">
         <h2>Manage Forms</h2>
-        <hr></hr>
+        <hr />
         <table className="table">
           <thead>
             <tr>
