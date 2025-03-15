@@ -14,22 +14,23 @@ function CreateNewForm({
   return (
     <div className="mb-5">
       <h2>Create New Form</h2>
-      <h2>Form Name</h2>
-      <input
-        className="form-control"
-        onChange={(e) =>
-          dispatch({ type: "setCurrentFormName", payload: e.target.value })
-        }
-      />
-      <hr></hr>
-      <GenericInputForm
-        parentName="create new form"
-        key={`${state.formKey} i`}
-        onSubmit={createForm}
-        fields={state.inputFields}
-        state={state}
-      />
-      <button onClick={() => handleSaveForm()}>Save Form</button>
+      <div className="mb-5 border rounded p-4">
+        <h2>Form Name</h2>
+        <input
+          className="form-control"
+          onChange={(e) =>
+            dispatch({ type: "setCurrentFormName", payload: e.target.value })
+          }
+        />
+        <GenericInputForm
+          parentName="create new form"
+          key={`${state.formKey} i`}
+          onSubmit={createForm}
+          fields={state.inputFields}
+          state={state}
+        />
+        <button onClick={() => handleSaveForm()}>Save Form</button>
+      </div>
       <h3>Add New Input</h3>
       <hr></hr>
       <h3>Input Title</h3>
