@@ -41,15 +41,12 @@ function Input() {
       <NavBar />
       <Select
         className="text-center mx-4 px-3"
+        style={{ width: "80%" }}
         title="Selected Form"
         options={forms.map((form) => form.name)}
         value={currentForm}
         onChange={(event) => setCurrentForm(event.target.value)}
       />
-      <h1 className="text-center">
-        I have the user input forms rendering here but the currently do not
-        submit properly
-      </h1>
       {currentForm && (
         <div className="container d-flex flex-column align-items-center mt-5">
           <h1 className="mb-4">Input</h1>
@@ -59,7 +56,6 @@ function Input() {
           />
         </div>
       )}
-      <h1 className="text-center">Hardcoded one that actually works</h1>
       <div className="container d-flex flex-column align-items-center mt-5">
         <h1 className="mb-4">Input</h1>
         <GenericInputForm
