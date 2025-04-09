@@ -333,6 +333,40 @@ app.delete("/api/charts/:id", async (req, res) => {
   }
 });
 
+// Form Responses
+app.post("/api/form-responses", async (req, res) => {
+  try {
+    const { name, fields } = req.body;
+    console.log("[Sever} Post /api/forms - Create new form");
+    console.log(
+      "[Server] MongoDB connection state:",
+      mongoose.connection.readyState
+    );
+    console.log("[Server] Received form-response data:", { name, fields });
+
+    const existingFormResponse = await Form.findOne({ name });
+    if (existingForm) {
+      console.log("[Server] Form name already exists:", name);
+      return res.status(400).json({ message: "Form name already exists." });
+    }
+
+    const form = new Form({
+      name,
+      fields: fields.map((field) => ({
+        ////
+      })),
+    });
+    console.log("[Server] Form response object before save:", form);
+    const savedForm = await form.save();
+    console.log("[Server] Successfully saved form response:", savedForm);
+    res.status(201).json(savedForm);
+  } catch (error) {
+    console.error("[Server] Error creating form response:", error);
+    console.error("[Server] Error stack trace:", error.stack);
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // Test route for basic server
 app.get("/api/test", (req, res) => {
   res.json({ message: "Server is running" });
