@@ -1,17 +1,30 @@
 import { useState } from "react";
 
 function InputForm({ onSubmit, fields }) {
-  const [formData, setFormData] = useState([]);
+  const [formData, setFormData] = useState({});
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const date = new Date();
-    const payload = { id: date, questionResponses: formData };
+    if (Object.keys(formData).length === 0) {
+      console.error("No form data to submit");
+      return;
+    }
+
+    const payload = {
+      id: date.toISOString(),
+      questionResponses: formData,
+    };
+
+    console.log("Submitting payload:", payload);
+
     try {
       await onSubmit(payload);
-      setFormData([]);
+      setFormData({});
+      console.log("Form submitted successfully!");
     } catch (error) {
       console.error("Error submitting form:", error);
+      console.log("Error submitting form. Please try again.");
     }
   };
 
@@ -39,6 +52,7 @@ function InputForm({ onSubmit, fields }) {
                 onChange={(e) => handleChange(e, field.name)}
                 required
               >
+                <option value="">Select {field.name}</option>
                 {field.options.map((option) => (
                   <option key={option} value={option}>
                     {option.charAt(0).toUpperCase() + option.slice(1)}
