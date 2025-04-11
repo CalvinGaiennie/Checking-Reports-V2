@@ -74,10 +74,7 @@ export const createForm = async (formData) => {
 
 export const getForms = async () => {
   try {
-    console.log("[API Service] Fetching forms from:", `${API_BASE_URL}/forms`);
-    console.log("[API Service] Full config:", api.defaults);
     const response = await api.get("/forms");
-    console.log("[API Service] Retrieved forms:", response.data);
     return response.data;
   } catch (error) {
     console.error("[API Service] Error in getForms:", error);
@@ -127,6 +124,20 @@ export const getForm = async (formId) => {
     return response.data;
   } catch (error) {
     console.error("Error in getForm:", error);
+    throw error;
+  }
+};
+
+//Form responses
+
+export const postFormResponse = async (data) => {
+  try {
+    console.log("Sending data to server:", data);
+    const response = await api.post("/form-responses", data);
+    console.log("Server response:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error in postData:", error);
     throw error;
   }
 };
