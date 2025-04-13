@@ -5,6 +5,7 @@ import cors from "cors";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import path from "path";
+import { FormResponse } from "./models/FormResponse.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -336,34 +337,42 @@ app.delete("/api/charts/:id", async (req, res) => {
 // Form Responses
 app.post("/api/form-responses", async (req, res) => {
   try {
-    const { name, fields } = req.body;
-    console.log("[Sever} Post /api/forms - Create new form");
+    const { id, questionResponses } = req.body;
+    console.log(
+      "[Server] POST /api/form-responses - Creating new form response"
+    );
+
+    if (!id || !questionResponses) {
+      console.error("[Server] Missing required fields");
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
     console.log(
       "[Server] MongoDB connection state:",
       mongoose.connection.readyState
     );
-    console.log("[Server] Received form-response data:", { name, fields });
-
-    const existingFormResponse = await Form.findOne({ name });
-    if (existingForm) {
-      console.log("[Server] Form name already exists:", name);
-      return res.status(400).json({ message: "Form name already exists." });
+    if (mongoose.connection.readyState !== 1) {
+      console.error("[Server] MongoDB not connected");
+      return res.status(500).json({ message: "Database connection error" });
     }
 
-    const form = new Form({
-      name,
-      fields: fields.map((field) => ({
-        ////
-      })),
+    const formResponse = new FormResponse({
+      id,
+      questionResponses,
+      submittedAt: new Date(),
     });
-    console.log("[Server] Form response object before save:", form);
-    const savedForm = await form.save();
-    console.log("[Server] Successfully saved form response:", savedForm);
-    res.status(201).json(savedForm);
+
+    console.log("[Server] Form response object before save:", formResponse);
+    const savedResponse = await formResponse.save();
+    console.log("[Server] Successfully saved form response:", savedResponse);
+    res.status(201).json(savedResponse);
   } catch (error) {
     console.error("[Server] Error creating form response:", error);
     console.error("[Server] Error stack trace:", error.stack);
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      message: "Failed to save form response",
+      error: error.message,
+    });
   }
 });
 

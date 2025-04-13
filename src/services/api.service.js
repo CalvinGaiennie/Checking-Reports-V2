@@ -132,12 +132,13 @@ export const getForm = async (formId) => {
 
 export const postFormResponse = async (data) => {
   try {
-    console.log("Sending data to server:", data);
+    console.log("[API Service] Sending form response:", data);
     const response = await api.post("/form-responses", data);
-    console.log("Server response:", response.data);
+    console.log("[API Service] Server response:", response.data);
     return response.data;
   } catch (error) {
-    console.error("Error in postData:", error);
+    console.error("[API Service] Error posting form response:", error);
+    console.error("[API Service] Error details:", error.response?.data);
     throw error;
   }
 };

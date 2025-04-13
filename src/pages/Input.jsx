@@ -1,6 +1,6 @@
 import NavBar from "../components/NavBar";
 import InputForm from "../components/InputForm";
-import { postData, postFormResponse } from "../services/api.service";
+import { postFormResponse } from "../services/api.service";
 import { useEffect, useReducer } from "react";
 import Select from "../components/Select";
 import { getForms } from "../services/api.service";
@@ -31,6 +31,7 @@ function Input() {
   const handleSubmit = async (formData) => {
     try {
       // Ensure data is properly formatted before sending
+      console.log("form data", formData);
       await postFormResponse(formData);
     } catch (error) {
       console.error("Form submission error:", error);
