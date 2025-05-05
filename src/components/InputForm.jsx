@@ -46,9 +46,9 @@ function InputForm({ onSubmit, fields }) {
             </label>
             {field.type === "select" ? (
               <select
-                name={field.name.toLowerCase()}
+                name={field.name}
                 className="form-select"
-                value={formData[field.name.toLowerCase()] || ""}
+                value={formData[field.name] || ""}
                 onChange={(e) => handleChange(e, field.name)}
                 required
               >
@@ -62,9 +62,9 @@ function InputForm({ onSubmit, fields }) {
             ) : (
               <input
                 type={field.type}
-                name={field.name.toLowerCase()}
+                name={field.name}
                 className="form-control"
-                value={formData[field.name.toLowerCase()] || ""}
+                value={formData[field.name] || ""}
                 onChange={(e) => handleChange(e, field.name)}
                 required
               />
