@@ -150,7 +150,16 @@ function Admin() {
       type: "setInputType",
       payload: e.target.value,
     });
+    dispatch({
+      type: "setInputOptions",
+      payload: [],
+    });
+    dispatch({
+      type: "formOptionNumber",
+      payload: [],
+    });
   }
+
   function handleInputTitleChange(e) {
     dispatch({ type: "setInputTitle", payload: e.target.value });
   }
@@ -176,6 +185,31 @@ function Admin() {
     dispatch({
       type: "setInputFields",
       payload: [...state.inputFields, currentInputSchema],
+    });
+    // Clear all form fields after adding
+    dispatch({
+      type: "setInputOptions",
+      payload: [],
+    });
+    dispatch({
+      type: "setFormOptionNumber",
+      payload: [],
+    });
+    dispatch({
+      type: "setInputTitle",
+      payload: "",
+    });
+    dispatch({
+      type: "setCurrentInputDescription",
+      payload: "",
+    });
+    dispatch({
+      type: "setCurrentInputRequiredBool",
+      payload: false,
+    });
+    dispatch({
+      type: "setInputType",
+      payload: "input",
     });
   }
 

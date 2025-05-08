@@ -36,7 +36,11 @@ function CreateNewForm({
         <h3>Add New Input</h3>
         <hr />
         <h3>Input Title</h3>
-        <input className="form-control" onChange={handleInputTitleChange} />
+        <input
+          className="form-control"
+          onChange={handleInputTitleChange}
+          value={state.inputTitle}
+        />
         <Select
           title="Input Type"
           onChange={handleInputTypeChange}
