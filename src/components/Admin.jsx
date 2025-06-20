@@ -1,4 +1,4 @@
-import { useState, useReducer, useEffect } from "react";
+import { useReducer, useEffect } from "react";
 import GenericInputForm from "./GenericInputForm";
 import {
   getData,
@@ -28,6 +28,7 @@ const initialState = {
   permissionLevels: ["user", "viewer", "basic admin", "full admin"],
   currentInputRequiredBool: false,
   currentFormName: "",
+  currentOption: "",
 };
 
 const reducer = (state, action) => {
@@ -66,6 +67,8 @@ const reducer = (state, action) => {
       return { ...state, currentInputDescription: action.payload };
     case "setCurrentInputRequiredBool":
       return { ...state, currentInputRequiredBool: action.payload };
+    case "setCurrentOption":
+      return { ...state, currentOption: action.payload };
     default:
       return state;
   }
@@ -155,7 +158,7 @@ function Admin() {
       payload: [],
     });
     dispatch({
-      type: "formOptionNumber",
+      type: "setFormOptionNumber",
       payload: [],
     });
   }
@@ -163,16 +166,29 @@ function Admin() {
   function handleInputTitleChange(e) {
     dispatch({ type: "setInputTitle", payload: e.target.value });
   }
-  function handleAddInputOption(e) {
-    console.log("Adding option:", e.target.value);
-    console.log("Current options:", state.inputOptions);
+  function handleAddInputOption(option) {
     dispatch({
       type: "setInputOptions",
-      payload: [...state.inputOptions, e.target.value],
+      payload: [...state.inputOptions, option],
     });
   }
 
+  function handleCurrentOptionSubmission() {
+    dispatch({
+      type: "setFormOptionNumber",
+      payload: [...state.formOptionNumber, state.formOptionNumber.length],
+    });
+    handleAddInputOption(state.currentOption);
+    dispatch({
+      type: "setCurrentOption",
+      payload: "",
+    });
+  }
   function handleInputAdd() {
+    if (state.currentOption && state.currentOption.trim() !== "") {
+      handleAddInputOption(state.currentOption);
+    }
+
     const currentInputSchema = {
       name: state.inputTitle,
       description: state.currentInputDescription,
@@ -210,6 +226,10 @@ function Admin() {
     dispatch({
       type: "setInputType",
       payload: "input",
+    });
+    dispatch({
+      type: "setCurrentOption",
+      payload: "",
     });
   }
 
@@ -356,6 +376,7 @@ function Admin() {
         handleInputAdd={handleInputAdd}
         dispatch={dispatch}
         handleSaveForm={handleSaveForm}
+        handleCurrentOptionSubmission={handleCurrentOptionSubmission}
       />
     </div>
   );

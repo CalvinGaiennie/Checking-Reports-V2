@@ -6,10 +6,10 @@ function CreateNewForm({
   createForm,
   handleInputTitleChange,
   handleInputTypeChange,
-  handleAddInputOption,
   handleInputAdd,
   handleSaveForm,
   dispatch,
+  handleCurrentOptionSubmission,
 }) {
   return (
     <div className="mb-5">
@@ -55,21 +55,18 @@ function CreateNewForm({
                   <h4>Option {index + 1}</h4>
                   <input
                     className="form-control mb-4"
-                    onChange={(e) => handleAddInputOption(e)}
+                    onBlur={(e) =>
+                      dispatch({
+                        type: "setCurrentOption",
+                        payload: e.target.value,
+                      })
+                    }
                   />
                 </div>
               ))}
               <button
                 className="btn btn-secondary"
-                onClick={() =>
-                  dispatch({
-                    type: "setFormOptionNumber",
-                    payload: [
-                      ...state.formOptionNumber,
-                      state.formOptionNumber.length,
-                    ],
-                  })
-                }
+                onClick={() => handleCurrentOptionSubmission()}
               >
                 Add Another Option
               </button>
