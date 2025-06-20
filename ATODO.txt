@@ -1,7 +1,7 @@
 BASIC FUNCTIONALITY
 • Allow users to submit responses to forms 
     • Inputs dont let you type on the forms
-• Fix this: adding an option to a select on a new form adds a new option on every keystroke
+• When creating selects on new forms add the ability to remove options and get the last typed option to save
 
 LATER FEATURES
 •Add default settings to charts

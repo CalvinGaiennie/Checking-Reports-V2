@@ -20,7 +20,7 @@ const initialState = {
   inputType: "input",
   inputTitle: "name",
   inputOptions: [],
-  formOptionNumber: [],
+  formOptionNumber: [0],
   keys: [],
   formKey: 0,
   error: null,
@@ -159,7 +159,7 @@ function Admin() {
     });
     dispatch({
       type: "setFormOptionNumber",
-      payload: [],
+      payload: e.target.value === "select" ? [0] : [],
     });
   }
 
