@@ -286,6 +286,13 @@ function Admin() {
     }
   }
 
+  function handleRemoveOption(index) {
+    // dispatch({
+    //   type: "setInputOptions",
+    //   payload: state.inputOptions.filter((_, i) => i !== index),
+    // });
+  }
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -381,6 +388,7 @@ function Admin() {
         dispatch={dispatch}
         handleSaveForm={handleSaveForm}
         handleCurrentOptionSubmission={handleCurrentOptionSubmission}
+        handleRemoveOption={handleRemoveOption}
       />
     </div>
   );

@@ -10,6 +10,7 @@ function CreateNewForm({
   handleSaveForm,
   dispatch,
   handleCurrentOptionSubmission,
+  handleRemoveOption,
 }) {
   return (
     <div className="mb-5">
@@ -37,7 +38,7 @@ function CreateNewForm({
         <hr />
         <h3>Input Title</h3>
         <input
-          className="form-control"
+          className="form-control mb-2"
           onChange={handleInputTitleChange}
           value={state.inputTitle}
         />
@@ -52,16 +53,25 @@ function CreateNewForm({
             <>
               {state.formOptionNumber.map((_, index) => (
                 <div key={`${state.formKey}option${index}`}>
-                  <h4>Option {index + 1}</h4>
-                  <input
-                    className="form-control mb-4"
-                    onBlur={(e) =>
-                      dispatch({
-                        type: "setCurrentOption",
-                        payload: e.target.value,
-                      })
-                    }
-                  />
+                  <h4 className="mt-2">Option {index + 1}</h4>
+                  <div className="d-flex align-items-center gap-2">
+                    <input
+                      className="form-control mb-4"
+                      onBlur={(e) =>
+                        dispatch({
+                          type: "setCurrentOption",
+                          payload: e.target.value,
+                        })
+                      }
+                    />
+                    <button
+                      className="btn btn-danger mb-4"
+                      style={{ height: "38px" }}
+                      onClick={() => handleRemoveOption(index)}
+                    >
+                      Remove
+                    </button>
+                  </div>
                 </div>
               ))}
               <button
