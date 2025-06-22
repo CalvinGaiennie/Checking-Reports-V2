@@ -185,15 +185,19 @@ function Admin() {
     });
   }
   function handleInputAdd() {
+    console.log("[Admin] handleInputAdd");
+
+    // Create the final options array including the current option if it exists
+    let finalOptions = [...state.inputOptions];
     if (state.currentOption && state.currentOption.trim() !== "") {
-      handleAddInputOption(state.currentOption);
+      finalOptions.push(state.currentOption);
     }
 
     const currentInputSchema = {
       name: state.inputTitle,
       description: state.currentInputDescription,
       type: state.inputType,
-      options: state.inputOptions,
+      options: finalOptions,
       required: state.currentInputRequiredBool,
     };
     console.log("[Admin] Adding new field:", currentInputSchema);
