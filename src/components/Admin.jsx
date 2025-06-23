@@ -272,7 +272,7 @@ function Admin() {
   function handleRemoveOption(index) {
     dispatch({
       type: "setInputOptions",
-      payload: state.inputOptions.filter((_, i) => i !== index),
+      payload: state.inputOptions.filter((option) => option.index !== index),
     });
   }
 
