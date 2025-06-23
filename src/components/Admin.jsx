@@ -27,7 +27,7 @@ const initialState = {
   permissionLevels: ["user", "viewer", "basic admin", "full admin"],
   currentInputRequiredBool: false,
   currentFormName: "",
-  currentOption: "",
+  currentOption: {},
 };
 
 const reducer = (state, action) => {
@@ -151,33 +151,41 @@ function Admin() {
     });
     dispatch({
       type: "setInputOptions",
-      payload: [""],
+      payload: [{ index: 0, text: "" }],
     });
   }
 
   function handleInputTitleChange(e) {
     dispatch({ type: "setInputTitle", payload: e.target.value });
   }
-  function handleAddInputOption(option) {
+  function handleAddInputOption(index) {
     dispatch({
       type: "setInputOptions",
-      payload: [...state.inputOptions, option],
+      payload: [...state.inputOptions, { index, text: "" }],
     });
   }
 
   function handleCurrentOptionSubmission() {
-    handleAddInputOption(state.currentOption);
+    const currentOptionsArray = [...state.inputOptions];
+
+    currentOptionsArray.splice(
+      state.currentOption.index,
+      1,
+      state.currentOption
+    );
+    dispatch({
+      type: "setInputOptions",
+      payload: [...currentOptionsArray],
+    });
     dispatch({
       type: "setCurrentOption",
-      payload: "",
+      payload: {},
     });
   }
   function handleInputAdd() {
-    console.log("[Admin] handleInputAdd");
-
     let finalOptions = [...state.inputOptions];
-    if (state.currentOption && state.currentOption.trim() !== "") {
-      finalOptions.push(state.currentOption);
+    if (state.currentOption.text && state.currentOption.text.trim() !== "") {
+      finalOptions.splice(state.currentOption.index, 0, state.currentOption);
     }
 
     const currentInputSchema = {
@@ -238,7 +246,7 @@ function Admin() {
         name: state.currentFormName,
         fields: state.inputFields,
       };
-      const savedForm = await createForm(payload);
+      await createForm(payload);
 
       // Clear form after successful save
       dispatch({ type: "setInputFields", payload: [] });

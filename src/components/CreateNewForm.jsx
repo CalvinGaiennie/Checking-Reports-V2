@@ -11,6 +11,7 @@ function CreateNewForm({
   dispatch,
   handleCurrentOptionSubmission,
   handleRemoveOption,
+  handleAddInputOption,
 }) {
   return (
     <div className="mb-5">
@@ -60,9 +61,10 @@ function CreateNewForm({
                       onChange={(e) =>
                         dispatch({
                           type: "setCurrentOption",
-                          payload: e.target.value,
+                          payload: { index: index, text: e.target.value },
                         })
                       }
+                      onBlur={() => handleCurrentOptionSubmission()}
                     />
                     <button
                       className="btn btn-danger mb-4"
@@ -76,7 +78,7 @@ function CreateNewForm({
               ))}
               <button
                 className="btn btn-secondary"
-                onClick={() => handleCurrentOptionSubmission()}
+                onClick={() => handleAddInputOption(state.inputOptions.length)}
               >
                 Add Another Option
               </button>

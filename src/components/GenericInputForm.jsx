@@ -14,7 +14,6 @@ function GenericInputForm({
       input: "items",
     }
   );
-  console.log("fields", fields, "parent name", parentName);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -56,11 +55,19 @@ function GenericInputForm({
                 onChange={handleChange}
                 required
               >
-                {field.options.map((option) => (
-                  <option key={option} value={option}>
-                    {option.charAt(0).toUpperCase() + option.slice(1)}
-                  </option>
-                ))}
+                {field.options.map((option, optionIndex) => {
+                  const optionText =
+                    typeof option === "string" ? option : option.text;
+                  const optionKey =
+                    typeof option === "string"
+                      ? option
+                      : `${option.text}-${optionIndex}`;
+                  return (
+                    <option key={optionKey} value={optionText}>
+                      {optionText}
+                    </option>
+                  );
+                })}
               </select>
             ) : (
               <input
