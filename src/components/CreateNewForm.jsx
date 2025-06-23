@@ -51,13 +51,13 @@ function CreateNewForm({
         <div>
           {state.inputType === "select" && (
             <>
-              {state.formOptionNumber.map((_, index) => (
+              {state.inputOptions.map((_, index) => (
                 <div key={`${state.formKey}option${index}`}>
                   <h4 className="mt-2">Option {index + 1}</h4>
                   <div className="d-flex align-items-center gap-2">
                     <input
                       className="form-control mb-4"
-                      onBlur={(e) =>
+                      onChange={(e) =>
                         dispatch({
                           type: "setCurrentOption",
                           payload: e.target.value,

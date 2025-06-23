@@ -44,6 +44,12 @@ function Input() {
       try {
         const forms = await getForms();
         dispatch({ type: "setForms", payload: forms });
+
+        // Auto-select the first form if available
+        if (forms.length > 0) {
+          dispatch({ type: "setCurrentForm", payload: forms[0].name });
+          console.log("FORM SELECTED", `${state.forms[0].name}`);
+        }
       } catch (error) {
         console.error("[Input Page] Error fetching forms:", error);
       }

@@ -20,7 +20,6 @@ const initialState = {
   inputType: "input",
   inputTitle: "name",
   inputOptions: [],
-  formOptionNumber: [0],
   keys: [],
   formKey: 0,
   error: null,
@@ -45,14 +44,11 @@ const reducer = (state, action) => {
       return {
         ...state,
         inputType: action.payload,
-        formOptionNumber: action.payload === "select" ? [0] : [],
       };
     case "setInputTitle":
       return { ...state, inputTitle: action.payload };
     case "setInputOptions":
       return { ...state, inputOptions: action.payload };
-    case "setFormOptionNumber":
-      return { ...state, formOptionNumber: action.payload };
     case "setKeys":
       return { ...state, keys: action.payload };
     case "setError":
@@ -155,11 +151,7 @@ function Admin() {
     });
     dispatch({
       type: "setInputOptions",
-      payload: [],
-    });
-    dispatch({
-      type: "setFormOptionNumber",
-      payload: e.target.value === "select" ? [0] : [],
+      payload: [""],
     });
   }
 
@@ -174,10 +166,6 @@ function Admin() {
   }
 
   function handleCurrentOptionSubmission() {
-    dispatch({
-      type: "setFormOptionNumber",
-      payload: [...state.formOptionNumber, state.formOptionNumber.length],
-    });
     handleAddInputOption(state.currentOption);
     dispatch({
       type: "setCurrentOption",
@@ -187,7 +175,6 @@ function Admin() {
   function handleInputAdd() {
     console.log("[Admin] handleInputAdd");
 
-    // Create the final options array including the current option if it exists
     let finalOptions = [...state.inputOptions];
     if (state.currentOption && state.currentOption.trim() !== "") {
       finalOptions.push(state.currentOption);
@@ -200,8 +187,6 @@ function Admin() {
       options: finalOptions,
       required: state.currentInputRequiredBool,
     };
-    console.log("[Admin] Adding new field:", currentInputSchema);
-    console.log("[Admin] Current input fields:", state.inputFields);
     dispatch({
       type: "setInputFields",
       payload: [...state.inputFields, currentInputSchema],
@@ -209,10 +194,6 @@ function Admin() {
     // Clear all form fields after adding
     dispatch({
       type: "setInputOptions",
-      payload: [],
-    });
-    dispatch({
-      type: "setFormOptionNumber",
       payload: [],
     });
     dispatch({
@@ -239,7 +220,6 @@ function Admin() {
 
   async function handleSaveForm() {
     try {
-      console.log("[Admin] Starting form save process");
       if (!state.currentFormName) {
         console.log("[Admin] Form save failed: Name required");
         dispatch({ type: "setError", payload: "Form name is required" });
@@ -247,7 +227,6 @@ function Admin() {
       }
 
       if (state.inputFields.length === 0) {
-        console.log("[Admin] Form save failed: No fields");
         dispatch({
           type: "setError",
           payload: "Form must have at least one field",
@@ -259,11 +238,7 @@ function Admin() {
         name: state.currentFormName,
         fields: state.inputFields,
       };
-      console.log("[Admin] Attempting to save form with payload:", payload);
-      console.log("[Admin] Current state:", state);
-
       const savedForm = await createForm(payload);
-      console.log("[Admin] Form saved successfully:", savedForm);
 
       // Clear form after successful save
       dispatch({ type: "setInputFields", payload: [] });
@@ -287,10 +262,10 @@ function Admin() {
   }
 
   function handleRemoveOption(index) {
-    // dispatch({
-    //   type: "setInputOptions",
-    //   payload: state.inputOptions.filter((_, i) => i !== index),
-    // });
+    dispatch({
+      type: "setInputOptions",
+      payload: state.inputOptions.filter((_, i) => i !== index),
+    });
   }
 
   useEffect(() => {
