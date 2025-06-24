@@ -1,7 +1,6 @@
 BASIC FUNCTIONALITY
 • Allow users to submit responses to forms 
     • Inputs dont let you type on the forms
-• make remove option work on new form select options
 
 LATER FEATURES
 •Add default settings to charts
