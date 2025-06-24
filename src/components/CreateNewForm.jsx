@@ -9,7 +9,6 @@ function CreateNewForm({
   handleInputAdd,
   handleSaveForm,
   dispatch,
-  handleCurrentOptionSubmission,
   handleRemoveOption,
   handleAddInputOption,
 }) {
@@ -58,13 +57,18 @@ function CreateNewForm({
                   <div className="d-flex align-items-center gap-2">
                     <input
                       className="form-control mb-4"
-                      onChange={(e) =>
+                      value={state.inputOptions[index]?.text || ""}
+                      onChange={(e) => {
+                        const newOptions = [...state.inputOptions];
+                        newOptions[index] = {
+                          ...newOptions[index],
+                          text: e.target.value,
+                        };
                         dispatch({
-                          type: "setCurrentOption",
-                          payload: { index: index, text: e.target.value },
-                        })
-                      }
-                      onBlur={() => handleCurrentOptionSubmission()}
+                          type: "setInputOptions",
+                          payload: newOptions,
+                        });
+                      }}
                     />
                     <button
                       className="btn btn-danger mb-4"

@@ -27,7 +27,6 @@ const initialState = {
   permissionLevels: ["user", "viewer", "basic admin", "full admin"],
   currentInputRequiredBool: false,
   currentFormName: "",
-  currentOption: {},
 };
 
 const reducer = (state, action) => {
@@ -63,8 +62,6 @@ const reducer = (state, action) => {
       return { ...state, currentInputDescription: action.payload };
     case "setCurrentInputRequiredBool":
       return { ...state, currentInputRequiredBool: action.payload };
-    case "setCurrentOption":
-      return { ...state, currentOption: action.payload };
     default:
       return state;
   }
@@ -165,28 +162,8 @@ function Admin() {
     });
   }
 
-  function handleCurrentOptionSubmission() {
-    const currentOptionsArray = [...state.inputOptions];
-
-    currentOptionsArray.splice(
-      state.currentOption.index,
-      1,
-      state.currentOption
-    );
-    dispatch({
-      type: "setInputOptions",
-      payload: [...currentOptionsArray],
-    });
-    dispatch({
-      type: "setCurrentOption",
-      payload: {},
-    });
-  }
   function handleInputAdd() {
     let finalOptions = [...state.inputOptions];
-    if (state.currentOption.text && state.currentOption.text.trim() !== "") {
-      finalOptions.splice(state.currentOption.index, 0, state.currentOption);
-    }
 
     const currentInputSchema = {
       name: state.inputTitle,
@@ -219,10 +196,6 @@ function Admin() {
     dispatch({
       type: "setInputType",
       payload: "input",
-    });
-    dispatch({
-      type: "setCurrentOption",
-      payload: "",
     });
   }
 
@@ -270,9 +243,13 @@ function Admin() {
   }
 
   function handleRemoveOption(index) {
+    const newOptions = state.inputOptions
+      .filter((_, i) => i !== index)
+      .map((option, i) => ({ ...option, index: i }));
+
     dispatch({
       type: "setInputOptions",
-      payload: state.inputOptions.filter((option) => option.index !== index),
+      payload: newOptions,
     });
   }
 
@@ -370,7 +347,6 @@ function Admin() {
         handleInputAdd={handleInputAdd}
         dispatch={dispatch}
         handleSaveForm={handleSaveForm}
-        handleCurrentOptionSubmission={handleCurrentOptionSubmission}
         handleRemoveOption={handleRemoveOption}
       />
     </div>
