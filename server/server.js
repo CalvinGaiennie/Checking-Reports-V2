@@ -48,24 +48,6 @@ mongoose
 
 /////////////////////////
 
-const itemSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  value: { type: Number, required: true },
-  category: { type: String, required: true },
-  date: { type: Date, default: Date.now },
-});
-
-itemSchema.set("toJSON", {
-  transform: function (doc, ret) {
-    ret.id = ret._id.toString();
-    delete ret._id;
-    delete ret.__v;
-    return ret;
-  },
-});
-
-const Item = mongoose.model("Item", itemSchema);
-
 const userSchema = new mongoose.Schema({
   name: String,
   username: String,
@@ -100,30 +82,6 @@ const Chart = mongoose.model("Chart", chartSchema);
 const Form = mongoose.model("Form", formSchema);
 
 // Routes
-/////////////////////////
-//Item Routes
-app.get("/api/items", async (req, res) => {
-  try {
-    console.log("Attempting to fetch items...");
-    const items = await Item.find();
-    console.log("Found items in database:", items);
-    res.json(items);
-  } catch (error) {
-    console.error("Error fetching items:", error);
-    res.status(500).json({ message: error.message });
-  }
-});
-
-app.post("/api/items", async (req, res) => {
-  try {
-    const item = new Item(req.body);
-    const savedItem = await item.save();
-    res.status(201).json(savedItem);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-});
-
 /////////////////////////
 //User Routes
 // Add this new endpoint to fetch users
@@ -223,7 +181,6 @@ app.patch("/api/users/:userId/permissions", async (req, res) => {
 
 ///////////////////////////
 // Form Routes
-
 app.get("/api/forms", async (req, res) => {
   try {
     console.log("[Server] GET /api/forms - Fetching all forms");
@@ -280,7 +237,6 @@ app.post("/api/forms", async (req, res) => {
 
 ///////////////////////////
 // Chart Routes
-
 app.get("/api/charts", async (req, res) => {
   try {
     console.log("Attempting to fetch charts...");
@@ -288,7 +244,7 @@ app.get("/api/charts", async (req, res) => {
     console.log("Found charts in database:", charts);
     res.json(charts);
   } catch (error) {
-    console.error("Error fetching items:", error);
+    console.error("Error fetching form responses:", error);
     res.status(500).json({ message: error.message });
   }
 });
@@ -337,13 +293,16 @@ app.delete("/api/charts/:id", async (req, res) => {
 // Form Responses
 app.post("/api/form-responses", async (req, res) => {
   try {
-    const { id, questionResponses } = req.body;
+    const { id, formName, questionResponses } = req.body;
     console.log(
       "[Server] POST /api/form-responses - Creating new form response"
     );
 
-    if (!id || !questionResponses) {
+    if (!id || !formName || !questionResponses) {
       console.error("[Server] Missing required fields");
+      console.error("[Server] id:", id);
+      console.error("[Server] formName:", formName);
+      console.error("[Server] questionResponses:", questionResponses);
       return res.status(400).json({ message: "Missing required fields" });
     }
 
@@ -358,6 +317,7 @@ app.post("/api/form-responses", async (req, res) => {
 
     const formResponse = new FormResponse({
       id,
+      formName,
       questionResponses,
       submittedAt: new Date(),
     });
@@ -373,6 +333,15 @@ app.post("/api/form-responses", async (req, res) => {
       message: "Failed to save form response",
       error: error.message,
     });
+  }
+});
+
+app.get("/api/form-responses", async (req, res) => {
+  try {
+    const formResponses = await FormResponse.find();
+    res.json(formResponses);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 });
 

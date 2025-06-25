@@ -11,7 +11,7 @@ function GenericInputForm({
     initialData || {
       type: "bar",
       name: "",
-      input: "items",
+      input: "formResponses",
     }
   );
 
@@ -25,7 +25,9 @@ function GenericInputForm({
       }, {});
 
       await onSubmit(transformedData);
-      setFormData(initialData || { type: "bar", name: "", input: "items" });
+      setFormData(
+        initialData || { type: "bar", name: "", input: "formResponses" }
+      );
     } catch (error) {
       console.error("Error submitting form:", error);
     }

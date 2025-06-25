@@ -5,6 +5,10 @@ const formResponseSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  formName: {
+    type: String,
+    required: true,
+  },
   questionResponses: {
     type: Map,
     of: String,

@@ -1,13 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import ChartComponent from "../components/ChartComponent";
 import NavBar from "../components/NavBar";
-import { getData, getCharts } from "../services/api.service";
-import ItemCard from "../components/ItemCard";
+import { getFormResponses, getCharts } from "../services/api.service";
+import FormResponseCard from "../components/FormResponseCard";
 import Order from "../components/Order";
 
 function Display() {
   const [loading, setLoading] = useState(true);
-  const [items, setItems] = useState([]);
+  const [formResponses, setFormResponses] = useState([]);
   const [legacyData, setLegacyData] = useState([]);
   const [charts, setCharts] = useState([]);
   const [cardSelection, setCardSelection] = useState("input");
@@ -16,11 +16,11 @@ function Display() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await getData();
-        setItems(data);
+        const data = await getFormResponses();
+        setFormResponses(data);
       } catch (error) {
         console.error("Error fetching data:", error);
-        setError("Failed to load items");
+        setError("Failed to load form responses");
       }
     };
     fetchData();
@@ -81,14 +81,12 @@ function Display() {
     setCardSelection(e.target.value);
   }
 
-  const dataSets = {
-    items: items,
-    legacyData: legacyData,
-  };
+  const dataSets = { formResponses: formResponses };
+
   return (
     <div className="container mt-4">
       <NavBar />
-      {!loading &&
+      {/* {!loading &&
         charts &&
         charts.length > 0 &&
         charts.map((chart) => (
@@ -99,22 +97,21 @@ function Display() {
             chartType={chart.type}
             metric={chart.metric}
           />
-        ))}
+        ))} */}
       <div>
         <h2>Which data would you like to see here?</h2>
         <select onChange={handleCardChange}>
           <option value="input">Input</option>
           <option value="legacy">Legacy</option>
         </select>
-        {/* I need to refactor the card component to be able to and data from any form so the user can dynamically put the cards for any user made form here from the admin page */}
         {cardSelection === "legacy"
           ? legacyData.length > 0 &&
             legacyData.map((entry, index) => (
               <Order key={`order${index}`} data={entry} />
             ))
-          : items.length > 0 &&
-            items.map((entry, index) => (
-              <ItemCard key={`order${index}`} data={entry} />
+          : formResponses.length > 0 &&
+            formResponses.map((entry, index) => (
+              <FormResponseCard key={`order${index}`} data={entry} />
             ))}
       </div>
     </div>

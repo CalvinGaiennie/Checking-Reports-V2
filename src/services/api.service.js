@@ -8,28 +8,6 @@ export const api = axios.create({
   },
 });
 
-export const getData = async () => {
-  try {
-    const response = await api.get("/items");
-    return response.data;
-  } catch (error) {
-    console.error("Failed to fetch items:", error);
-    throw error;
-  }
-};
-
-export const postData = async (data) => {
-  try {
-    console.log("Sending data to server:", data);
-    const response = await api.post("/items", data);
-    console.log("Server response:", response.data);
-    return response.data;
-  } catch (error) {
-    console.error("Error in postData:", error);
-    throw error;
-  }
-};
-
 //Users
 export const createUser = async (userData) => {
   try {
@@ -129,16 +107,23 @@ export const getForm = async (formId) => {
 };
 
 //Form responses
-
 export const postFormResponse = async (data) => {
   try {
-    console.log("[API Service] Sending form response:", data);
     const response = await api.post("/form-responses", data);
-    console.log("[API Service] Server response:", response.data);
     return response.data;
   } catch (error) {
     console.error("[API Service] Error posting form response:", error);
     console.error("[API Service] Error details:", error.response?.data);
+    throw error;
+  }
+};
+
+export const getFormResponses = async () => {
+  try {
+    const response = await api.get("/form-responses");
+    return response.data;
+  } catch (error) {
+    console.error("Failed to fetch form responses:", error);
     throw error;
   }
 };

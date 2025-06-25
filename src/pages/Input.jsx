@@ -30,9 +30,13 @@ function Input() {
 
   const handleSubmit = async (formData) => {
     try {
-      // Ensure data is properly formatted before sending
-      console.log("form data", formData);
-      await postFormResponse(formData);
+      // Add the form name to the data before sending
+      const dataWithFormName = {
+        ...formData,
+        formName: state.currentForm,
+      };
+
+      await postFormResponse(dataWithFormName);
     } catch (error) {
       console.error("Form submission error:", error);
       // Optionally add user feedback here

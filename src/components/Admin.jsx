@@ -1,7 +1,7 @@
 import { useReducer, useEffect } from "react";
 import GenericInputForm from "./GenericInputForm";
 import {
-  getData,
+  getFormResponses,
   createForm,
   createChart,
   deleteChart,
@@ -14,7 +14,7 @@ import UserAccountsTable from "./UserAccountsTable";
 const initialState = {
   users: [],
   charts: [],
-  items: [],
+  formResponses: [],
   inputFields: [],
   currentInputDescription: "",
   inputType: "input",
@@ -35,8 +35,8 @@ const reducer = (state, action) => {
       return { ...state, users: action.payload };
     case "setCharts":
       return { ...state, charts: action.payload };
-    case "setItems":
-      return { ...state, items: action.payload };
+    case "setFormResponses":
+      return { ...state, formResponses: action.payload };
     case "setInputFields":
       return { ...state, inputFields: action.payload };
     case "setInputType":
@@ -256,8 +256,8 @@ function Admin() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await getData();
-        dispatch({ type: "setItems", payload: data });
+        const data = await getFormResponses();
+        dispatch({ type: "setFormResponses", payload: data });
 
         if (data.length > 0) {
           dispatch({ type: "setKeys", payload: Object.keys(data[0]) });
@@ -265,7 +265,10 @@ function Admin() {
         }
       } catch (error) {
         console.error("Error fetching data:", error);
-        dispatch({ type: "setError", payload: "Failed to load items" });
+        dispatch({
+          type: "setError",
+          payload: "Failed to load form responses",
+        });
       }
     };
     fetchData();
@@ -291,7 +294,7 @@ function Admin() {
           initialData={{
             type: "bar",
             name: "",
-            input: "items",
+            input: "formResponses",
             metric: state.keys.length > 0 ? state.keys[0] : "",
           }}
           fields={[
@@ -307,7 +310,7 @@ function Admin() {
             {
               name: "input",
               type: "select",
-              options: ["items", "legacyData"],
+              options: ["formResponses", "legacyData"],
             },
             {
               name: "metric",
