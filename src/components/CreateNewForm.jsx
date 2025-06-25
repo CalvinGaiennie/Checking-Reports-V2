@@ -17,13 +17,15 @@ function CreateNewForm({
       <div className="mb-5 border rounded p-4">
         <h2>Create New Form</h2>
         <hr />
-        <h2>Form Name</h2>
-        <input
-          className="form-control"
-          onChange={(e) =>
-            dispatch({ type: "setCurrentFormName", payload: e.target.value })
-          }
-        />
+        <div className="container">
+          <h2>Form Name</h2>
+          <input
+            className="form-control"
+            onChange={(e) =>
+              dispatch({ type: "setCurrentFormName", payload: e.target.value })
+            }
+          />
+        </div>
         <GenericInputForm
           parentName="create new form"
           key={`${state.formKey} i`}

@@ -1,6 +1,6 @@
 BASIC FUNCTIONALITY
-• Allow users to submit responses to forms 
-    • Inputs dont let you type on the forms
+•Add another page to show form responses seperate from the charts or allow admin more control of the display page.
+•Fix the manage forms field
 
 LATER FEATURES
 •Add default settings to charts
@@ -8,3 +8,7 @@ LATER FEATURES
 •allow admin to give user permissions to certain, charts, settings, and forms
 •allow admin to create reports that can be exported
 •allow users to set which form will autoload for them
+
+
+PRIORITY
+Refactor The Display Component to show user defined data not just the hardcoded ones.
