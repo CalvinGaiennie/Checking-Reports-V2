@@ -219,7 +219,12 @@ app.post("/api/forms", async (req, res) => {
         name: field.name,
         description: field.description || "",
         type: field.type,
-        options: field.options || [],
+        options:
+          field.type === "select" && field.options
+            ? field.options.map((option) =>
+                typeof option === "string" ? option : option.text
+              )
+            : [],
         required: field.required || false,
       })),
     });

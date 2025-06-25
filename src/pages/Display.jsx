@@ -86,7 +86,7 @@ function Display() {
   return (
     <div className="container mt-4">
       <NavBar />
-      {/* {!loading &&
+      {!loading &&
         charts &&
         charts.length > 0 &&
         charts.map((chart) => (
@@ -97,7 +97,7 @@ function Display() {
             chartType={chart.type}
             metric={chart.metric}
           />
-        ))} */}
+        ))}
       <div>
         <h2>Which data would you like to see here?</h2>
         <select onChange={handleCardChange}>

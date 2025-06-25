@@ -1,14 +1,14 @@
-BASIC FUNCTIONALITY
+FEATURES
 •Add another page to show form responses seperate from the charts or allow admin more control of the display page.
 •Fix the manage forms field
-
-LATER FEATURES
 •Add default settings to charts
 •let users set a default form 
-•allow admin to give user permissions to certain, charts, settings, and forms
+•Custom Permissions: allow admin to give user permissions to certain, charts, settings, and forms.
 •allow admin to create reports that can be exported
 •allow users to set which form will autoload for them
 
+BUGS
+• fix the charts infinite loop
 
 PRIORITY
-•Refactor The Display Component to show user defined data not just the hardcoded ones.
+•add ability to filter the responses you are getting from the db by form name
