@@ -11,4 +11,4 @@ LATER FEATURES
 
 
 PRIORITY
-Refactor The Display Component to show user defined data not just the hardcoded ones.
+•Refactor The Display Component to show user defined data not just the hardcoded ones.
