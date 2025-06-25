@@ -6,6 +6,7 @@ import {
   createChart,
   deleteChart,
   api,
+  getForms,
 } from "../services/api.service";
 import CreateNewForm from "./CreateNewForm";
 import ManageChartsTable from "./ManageChartsTable";
@@ -14,6 +15,7 @@ import UserAccountsTable from "./UserAccountsTable";
 const initialState = {
   users: [],
   charts: [],
+  formNames: [],
   formResponses: [],
   inputFields: [],
   currentInputDescription: "",
@@ -26,7 +28,8 @@ const initialState = {
   updateMessage: "",
   permissionLevels: ["user", "viewer", "basic admin", "full admin"],
   currentInputRequiredBool: false,
-  currentFormName: "",
+  inProgressFormName: "",
+  inProgressChartForm: "",
 };
 
 const reducer = (state, action) => {
@@ -35,6 +38,8 @@ const reducer = (state, action) => {
       return { ...state, users: action.payload };
     case "setCharts":
       return { ...state, charts: action.payload };
+    case "setFormNames":
+      return { ...state, formNames: action.payload };
     case "setFormResponses":
       return { ...state, formResponses: action.payload };
     case "setInputFields":
@@ -56,12 +61,16 @@ const reducer = (state, action) => {
       return { ...state, updateMessage: action.payload };
     case "setFormKey":
       return { ...state, formKey: state.formKey + 1 };
-    case "setCurrentFormName":
-      return { ...state, currentFormName: action.payload };
+    case "setinProgressFormName":
+      return { ...state, inProgressFormName: action.payload };
     case "setCurrentInputDescription":
       return { ...state, currentInputDescription: action.payload };
     case "setCurrentInputRequiredBool":
       return { ...state, currentInputRequiredBool: action.payload };
+    case "setinProgressFormName":
+      return { ...state, inProgressFormName: action.payload };
+    case "setinProgressChartForm":
+      return { ...state, inProgressChartForm: action.payload };
     default:
       return state;
   }
@@ -201,7 +210,7 @@ function Admin() {
 
   async function handleSaveForm() {
     try {
-      if (!state.currentFormName) {
+      if (!state.inProgressFormName) {
         console.log("[Admin] Form save failed: Name required");
         dispatch({ type: "setError", payload: "Form name is required" });
         return;
@@ -216,14 +225,14 @@ function Admin() {
       }
 
       const payload = {
-        name: state.currentFormName,
+        name: state.inProgressFormName,
         fields: state.inputFields,
       };
       await createForm(payload);
 
       // Clear form after successful save
       dispatch({ type: "setInputFields", payload: [] });
-      dispatch({ type: "setCurrentFormName", payload: "" });
+      dispatch({ type: "setinProgressFormName", payload: "" });
       dispatch({
         type: "setUpdateMessage",
         payload: "Form saved successfully!",
@@ -274,6 +283,22 @@ function Admin() {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    const fetchForms = async () => {
+      try {
+        const forms = await getForms();
+        const formNames = [];
+        forms.forEach((form) => {
+          formNames.push(form.name);
+        });
+        dispatch({ type: "setFormNames", payload: formNames });
+      } catch (error) {
+        console.error("[Input Page] Error fetching forms:", error);
+      }
+    };
+    fetchForms();
+  }, []);
+
   if (state.error)
     return <div className="alert alert-danger">{state.error}</div>;
 
@@ -291,6 +316,7 @@ function Admin() {
         <GenericInputForm
           key={state.formKey}
           onSubmit={createChart}
+          //Make it so that the selected input becomes the inprogresschartform
           initialData={{
             type: "bar",
             name: "",
@@ -310,7 +336,7 @@ function Admin() {
             {
               name: "input",
               type: "select",
-              options: ["formResponses", "legacyData"],
+              options: [...state.formNames],
             },
             {
               name: "metric",
