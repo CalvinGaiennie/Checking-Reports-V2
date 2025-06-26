@@ -22,7 +22,10 @@ function CreateNewForm({
           <input
             className="form-control"
             onChange={(e) =>
-              dispatch({ type: "setCurrentFormName", payload: e.target.value })
+              dispatch({
+                type: "setinProgressFormName",
+                payload: e.target.value,
+              })
             }
           />
         </div>

@@ -303,8 +303,18 @@ function Admin() {
 
   useEffect(() => {
     const fetchMetrics = async () => {
+      // Guard against empty chart names
+      if (
+        !state.inProgressChartName ||
+        state.inProgressChartName.trim() === ""
+      ) {
+        // console.log("Admin: Chart name is empty, skipping metrics fetch");
+        dispatch({ type: "setinProgressChartMetrics", payload: [] });
+        return;
+      }
+
       const metrics = await getMetrics(state.inProgressChartName);
-      console.log("Metrics", metrics);
+      // console.log("Metrics", metrics);
       dispatch({ type: "setinProgressChartMetrics", payload: metrics });
     };
     fetchMetrics();

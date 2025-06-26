@@ -129,17 +129,14 @@ export const getFormResponses = async () => {
 };
 
 export const getMetrics = async (formName) => {
+  if (!formName || formName.trim() === "") {
+    return [];
+  }
+
   try {
     const response = await api.get(`/forms/${formName}`);
-
-    // The server now returns an array of field names directly
     const metrics = response.data;
-    // i want to go through the response data and find the form whos namne matches the form name then go through that ones feilds and make an array of them called metrics
-
-    console.log(
-      "METRICS-METRICS-METRICS-METRICS-METRICS-METRICS-METRICS",
-      metrics
-    );
+    // console.log("formName", formName, "METRICS", metrics);
     return metrics;
   } catch (error) {
     console.error("Failed to fetch form responses:", error);
