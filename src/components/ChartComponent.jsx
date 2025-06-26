@@ -63,6 +63,34 @@ function ChartComponent({ inputData = [], chartType, title, metric }) {
     return <div className="alert alert-danger">Unauthorized access</div>;
   }
 
+  function handleStartDateChange(e) {
+    dispatch({ type: "set_start_date", payload: e.target.value });
+  }
+
+  function handleEndDateChange(e) {
+    dispatch({ type: "set_end_date", payload: e.target.value });
+  }
+
+  function handleFilterChange(e) {
+    dispatch({ type: "set_filter", payload: e.target.value });
+  }
+
+  function handleDateToggle(date) {
+    const newActiveDates = state.activeDates.includes(date)
+      ? state.activeDates.filter((d) => d !== date)
+      : [...state.activeDates, date];
+    dispatch({ type: "set_active_dates", payload: newActiveDates });
+  }
+
+  const COLORS = [
+    "#0088FE",
+    "#00C49F",
+    "#FFBB28",
+    "#FF8042",
+    "#AF19FF",
+    "#FF4567",
+  ];
+
   // Sanitize and validate input data
   useEffect(() => {
     try {
@@ -123,128 +151,104 @@ function ChartComponent({ inputData = [], chartType, title, metric }) {
   }, [inputData]);
 
   //gets the unique dates from the input data and sorts them
-  useEffect(() => {
-    const uniqueDates = new Set(
-      inputData
-        .map((item) => {
-          if (!item.date && !item.Date) return null;
-          let dateStr = item.date || item.Date;
-          let dateObj = new Date(dateStr);
-          if (isNaN(dateObj)) {
-            return String(dateStr).split("T")[0];
-          }
-          return dateObj.toISOString().split("T")[0];
-        })
-        .filter(Boolean)
-    );
+  // useEffect(() => {
+  //   const uniqueDates = new Set(
+  //     inputData
+  //       .map((item) => {
+  //         if (!item.date && !item.Date) return null;
+  //         let dateStr = item.date || item.Date;
+  //         let dateObj = new Date(dateStr);
+  //         if (isNaN(dateObj)) {
+  //           return String(dateStr).split("T")[0];
+  //         }
+  //         return dateObj.toISOString().split("T")[0];
+  //       })
+  //       .filter(Boolean)
+  //   );
 
-    const sortedDates = Array.from(uniqueDates).sort((a, b) =>
-      a.localeCompare(b)
-    );
-    dispatch({ type: "set_sorted_dates", payload: sortedDates });
+  //   const sortedDates = Array.from(uniqueDates).sort((a, b) =>
+  //     a.localeCompare(b)
+  //   );
+  //   dispatch({ type: "set_sorted_dates", payload: sortedDates });
 
-    if (sortedDates.length > 0) {
-      dispatch({ type: "set_start_date", payload: sortedDates[0] });
-      dispatch({
-        type: "set_end_date",
-        payload: sortedDates[sortedDates.length - 1],
-      });
-    }
-  }, [inputData]);
+  //   if (sortedDates.length > 0) {
+  //     dispatch({ type: "set_start_date", payload: sortedDates[0] });
+  //     dispatch({
+  //       type: "set_end_date",
+  //       payload: sortedDates[sortedDates.length - 1],
+  //     });
+  //   }
+  // }, [inputData]);
 
   //counts the number of submissions based on the selected key and the available dates and updates the chart data
-  useEffect(() => {
-    if (!state.startDate || !state.endDate) return;
+  // useEffect(() => {
+  //   if (!state.startDate || !state.endDate) return;
 
-    const filteredData = inputData.filter((item) => {
-      const itemDate = item.date || item.Date;
-      const itemDateStr = new Date(itemDate).toISOString().split("T")[0];
-      return state.activeDates.includes(itemDateStr);
-    });
+  //   const filteredData = inputData.filter((item) => {
+  //     const itemDate = item.date || item.Date;
+  //     const itemDateStr = new Date(itemDate).toISOString().split("T")[0];
+  //     return state.activeDates.includes(itemDateStr);
+  //   });
 
-    const data = Object.entries(
-      filteredData.reduce((acc, item) => {
-        if (item[metric]) {
-          acc[item[metric]] = (acc[item[metric]] || 0) + 1;
-        }
-        return acc;
-      }, {})
-    ).map(([key, count]) => ({ key, count }));
+  //   const data = Object.entries(
+  //     filteredData.reduce((acc, item) => {
+  //       if (item[metric]) {
+  //         acc[item[metric]] = (acc[item[metric]] || 0) + 1;
+  //       }
+  //       return acc;
+  //     }, {})
+  //   ).map(([key, count]) => ({ key, count }));
 
-    // Apply percentage calculation if percentage filter is selected
-    if (state.selectedFilter === "percentage") {
-      const totalSubmissions = data.reduce((acc, item) => acc + item.count, 0);
-      const percentages = data.map((item) => ({
-        ...item,
-        count: Number(((item.count / totalSubmissions) * 100).toFixed(2)),
-      }));
-      dispatch({ type: "set_chart_data", payload: percentages });
-    } else {
-      dispatch({ type: "set_chart_data", payload: data });
-    }
-  }, [
-    inputData,
-    state.startDate,
-    state.endDate,
-    state.activeDates,
-    state.selectedFilter,
-  ]);
+  //   // Apply percentage calculation if percentage filter is selected
+  //   if (state.selectedFilter === "percentage") {
+  //     const totalSubmissions = data.reduce((acc, item) => acc + item.count, 0);
+  //     const percentages = data.map((item) => ({
+  //       ...item,
+  //       count: Number(((item.count / totalSubmissions) * 100).toFixed(2)),
+  //     }));
+  //     dispatch({ type: "set_chart_data", payload: percentages });
+  //   } else {
+  //     dispatch({ type: "set_chart_data", payload: data });
+  //   }
+  // }, [
+  //   inputData,
+  //   state.startDate,
+  //   state.endDate,
+  //   state.activeDates,
+  //   state.selectedFilter,
+  // ]);
 
-  useEffect(() => {
-    if (!state.startDate || !state.endDate || state.activeDates.length > 0)
-      return;
+  // useEffect(() => {
+  //   if (!state.startDate || !state.endDate || state.activeDates.length > 0)
+  //     return;
 
-    const dates = [];
-    const startDate = new Date(state.startDate);
-    const endDate = new Date(state.endDate);
+  //   const dates = [];
+  //   const startDate = new Date(state.startDate);
+  //   const endDate = new Date(state.endDate);
 
-    while (startDate <= endDate) {
-      dates.push(startDate.toISOString().split("T")[0]);
-      startDate.setDate(startDate.getDate() + 1);
-    }
+  //   while (startDate <= endDate) {
+  //     dates.push(startDate.toISOString().split("T")[0]);
+  //     startDate.setDate(startDate.getDate() + 1);
+  //   }
 
-    // Only dispatch if dates are actually different
-    if (
-      dates.length !== state.activeDates.length ||
-      !dates.every((d, i) => d === state.activeDates[i])
-    ) {
-      dispatch({ type: "set_active_dates", payload: dates });
-    }
-  }, [state.startDate, state.endDate, state.activeDates]);
+  //   // Only dispatch if dates are actually different
+  //   if (
+  //     dates.length !== state.activeDates.length ||
+  //     !dates.every((d, i) => d === state.activeDates[i])
+  //   ) {
+  //     dispatch({ type: "set_active_dates", payload: dates });
+  //   }
+  // }, [state.startDate, state.endDate, state.activeDates]);
 
-  function handleStartDateChange(e) {
-    dispatch({ type: "set_start_date", payload: e.target.value });
-  }
-
-  function handleEndDateChange(e) {
-    dispatch({ type: "set_end_date", payload: e.target.value });
-  }
-
-  function handleFilterChange(e) {
-    dispatch({ type: "set_filter", payload: e.target.value });
-  }
-
-  function handleDateToggle(date) {
-    const newActiveDates = state.activeDates.includes(date)
-      ? state.activeDates.filter((d) => d !== date)
-      : [...state.activeDates, date];
-    dispatch({ type: "set_active_dates", payload: newActiveDates });
-  }
-
-  const COLORS = [
-    "#0088FE",
-    "#00C49F",
-    "#FFBB28",
-    "#FF8042",
-    "#AF19FF",
-    "#FF4567",
-  ];
+  console.log("inputData:", inputData);
+  console.log("metric:", metric);
+  console.log("chartData:", state.chartData);
 
   return (
     <div className="mt-4">
       {state.error && <div className="alert alert-danger">{state.error}</div>}
       <h2 className="mb-4 text-center">{title}</h2>
-      <ChartSettings
+      {/* <ChartSettings
         startDate={state.startDate}
         endDate={state.endDate}
         sortedDates={state.sortedDates}
@@ -254,7 +258,7 @@ function ChartComponent({ inputData = [], chartType, title, metric }) {
         onEndDateChange={handleEndDateChange}
         onFilterChange={handleFilterChange}
         onDateToggle={handleDateToggle}
-      />
+      /> */}
       {chartType == "pie" ? (
         <div>
           <ResponsiveContainer width="100%" height={300}>

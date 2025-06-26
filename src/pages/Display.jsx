@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import ChartComponent from "../components/ChartComponent";
 import NavBar from "../components/NavBar";
 import { getFormResponses, getCharts } from "../services/api.service";
@@ -18,6 +18,7 @@ function Display() {
       try {
         const data = await getFormResponses();
         setFormResponses(data);
+        console.log("formResponseData", data);
       } catch (error) {
         console.error("Error fetching data:", error);
         setError("Failed to load form responses");
@@ -82,6 +83,7 @@ function Display() {
   }
 
   const dataSets = { formResponses: formResponses };
+  //I need to filter the formResponses to only include the formResponses that have the same formName as the chart.input and figure out why the data is not being passed to the chart component
 
   return (
     <div className="container mt-4">
@@ -89,15 +91,21 @@ function Display() {
       {!loading &&
         charts &&
         charts.length > 0 &&
-        charts.map((chart) => (
-          <ChartComponent
-            key={chart.name}
-            title={chart.name}
-            inputData={dataSets[chart.input]}
-            chartType={chart.type}
-            metric={chart.metric}
-          />
-        ))}
+        charts.map(
+          (chart) => (
+            console.log("formResponses at chart", formResponses),
+            console.log("chart at chart", chart),
+            (
+              <ChartComponent
+                key={chart.name}
+                title={chart.name}
+                inputData={dataSets[chart.input]}
+                chartType={chart.type}
+                metric={chart.metric}
+              />
+            )
+          )
+        )}
       <div>
         <h2>Which data would you like to see here?</h2>
         <select onChange={handleCardChange}>

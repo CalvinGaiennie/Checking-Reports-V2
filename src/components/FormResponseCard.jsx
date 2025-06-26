@@ -1,5 +1,4 @@
 function FormResponseCard({ data }) {
-  console.log("data", data);
   const formattedResponses = Object.entries(data.questionResponses).map(
     ([question, answer]) => ({
       question: question,
