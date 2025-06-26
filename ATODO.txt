@@ -10,6 +10,7 @@ FEATURES
 BUGS
 • fix the charts infinite loop
 •At certain screen widths the manage charts for overflows. need to handle overflow for each column
+•Chart metrics dont save propery 
 
 PRIORITY
 •Add ability to filter the responses you are getting from the db by form name

@@ -240,10 +240,6 @@ function ChartComponent({ inputData = [], chartType, title, metric }) {
   //   }
   // }, [state.startDate, state.endDate, state.activeDates]);
 
-  console.log("inputData:", inputData);
-  console.log("metric:", metric);
-  console.log("chartData:", state.chartData);
-
   return (
     <div className="mt-4">
       {state.error && <div className="alert alert-danger">{state.error}</div>}

@@ -18,7 +18,6 @@ function Display() {
       try {
         const data = await getFormResponses();
         setFormResponses(data);
-        console.log("formResponseData", data);
       } catch (error) {
         console.error("Error fetching data:", error);
         setError("Failed to load form responses");
@@ -82,30 +81,35 @@ function Display() {
     setCardSelection(e.target.value);
   }
 
-  const dataSets = { formResponses: formResponses };
-  //I need to filter the formResponses to only include the formResponses that have the same formName as the chart.input and figure out why the data is not being passed to the chart component
+  function getInputData(chart) {
+    //Input data is an array
+    //I need to get question responses from each array item
+    //I really only need to get the quest that matches the metric from each response
+    const inputData = formResponses
+      .filter((response) => response.formName === chart.input)
+      .map((response) => {
+        return {
+          [chart.metric]: response.questionResponses[chart.metric],
+        };
+      });
 
+    return inputData;
+  }
   return (
     <div className="container mt-4">
       <NavBar />
       {!loading &&
         charts &&
         charts.length > 0 &&
-        charts.map(
-          (chart) => (
-            console.log("formResponses at chart", formResponses),
-            console.log("chart at chart", chart),
-            (
-              <ChartComponent
-                key={chart.name}
-                title={chart.name}
-                inputData={dataSets[chart.input]}
-                chartType={chart.type}
-                metric={chart.metric}
-              />
-            )
-          )
-        )}
+        charts.map((chart) => (
+          <ChartComponent
+            key={chart.name}
+            title={chart.name}
+            inputData={getInputData(chart)}
+            chartType={chart.type}
+            metric={chart.metric}
+          />
+        ))}
       <div>
         <h2>Which data would you like to see here?</h2>
         <select onChange={handleCardChange}>
