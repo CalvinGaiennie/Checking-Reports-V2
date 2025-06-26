@@ -6,7 +6,6 @@ import {
   deleteChart,
   api,
   getForms,
-  getMetrics,
 } from "../services/api.service";
 import CreateNewForm from "./CreateNewForm";
 import ManageChartsTable from "./ManageChartsTable";
@@ -325,6 +324,11 @@ function Admin() {
     fetchMetrics();
   }, [state.inProgressChartName, state.formResponses]);
 
+  const handleChartFormSubmit = async (formData) => {
+    await createChart(formData);
+    await fetchCharts();
+  };
+
   if (state.error)
     return <div className="alert alert-danger">{state.error}</div>;
 
@@ -341,7 +345,7 @@ function Admin() {
         <hr />
         <ChartCreationForm
           key={state.formKey}
-          onSubmit={createChart}
+          onSubmit={handleChartFormSubmit}
           dispatch={dispatch}
           initialData={{
             type: "bar",
