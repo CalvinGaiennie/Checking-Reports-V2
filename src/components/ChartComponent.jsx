@@ -255,6 +255,13 @@ function ChartComponent({ inputData = [], chartType, title, metric }) {
         onFilterChange={handleFilterChange}
         onDateToggle={handleDateToggle}
       /> */}
+      {metric && (
+        <div style={{ textAlign: "center", marginBottom: 16, color: "#888" }}>
+          <span>
+            <b>Question:</b> {metric}
+          </span>
+        </div>
+      )}
       {chartType == "pie" ? (
         <div>
           <ResponsiveContainer width="100%" height={300}>
@@ -283,18 +290,40 @@ function ChartComponent({ inputData = [], chartType, title, metric }) {
         <div>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={state.chartData} margin={{ bottom: 50 }}>
-              <XAxis dataKey="key" angle={-45} textAnchor="end" interval={0} />
+              <XAxis
+                dataKey="key"
+                interval={0}
+                tick={({ x, y, payload }) => {
+                  const maxLen = 10; // Set your max length here
+                  const value = payload.value;
+                  // Split into two lines if too long
+                  let lines;
+                  if (value.length > maxLen) {
+                    lines = [value.slice(0, maxLen), value.slice(maxLen)];
+                  } else {
+                    lines = [value];
+                  }
+                  return (
+                    <g transform={`translate(${x},${y + 10})`}>
+                      {lines.map((line, i) => (
+                        <text
+                          key={i}
+                          x={0}
+                          y={i * 14}
+                          textAnchor="middle"
+                          fontSize={12}
+                          fill="#666"
+                        >
+                          {line}
+                        </text>
+                      ))}
+                    </g>
+                  );
+                }}
+              />
               <YAxis />
               <Tooltip />
-              <Legend />
-              <Bar dataKey="count" fill="#8884d8">
-                <LabelList
-                  position="top"
-                  formatter={(value) =>
-                    state.selectedFilter === "percentage" ? `${value}%` : value
-                  }
-                />
-              </Bar>
+              <Bar dataKey="count" fill="#8884d8" name="" />
             </BarChart>
           </ResponsiveContainer>
         </div>
