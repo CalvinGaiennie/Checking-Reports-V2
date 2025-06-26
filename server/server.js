@@ -189,7 +189,7 @@ app.get("/api/forms", async (req, res) => {
       mongoose.connection.readyState
     );
     const forms = await Form.find();
-    console.log("[Server] Found forms:", forms);
+    // console.log("[Server] Found forms:", forms);
     res.json(forms);
   } catch (error) {
     console.error("[Server] Error fetching forms:", error);
@@ -246,7 +246,7 @@ app.get("/api/charts", async (req, res) => {
   try {
     console.log("Attempting to fetch charts...");
     const charts = await Chart.find();
-    console.log("Found charts in database:", charts);
+    // console.log("Found charts in database:", charts);
     res.json(charts);
   } catch (error) {
     console.error("Error fetching form responses:", error);
@@ -296,17 +296,18 @@ app.delete("/api/charts/:id", async (req, res) => {
 });
 
 // Get metrics (field names) for a specific form
-app.get("/api/charts/:formName", async (req, res) => {
+app.get("/api/forms/:formName", async (req, res) => {
   try {
     const { formName } = req.params;
     console.log(
-      `[Server] GET /api/charts/${formName} - Fetching metrics for form:`,
+      `[Server] GET /api/forms/${formName} - Fetching metrics for form:`,
       formName
     );
 
     // Find the form by name
     const form = await Form.findOne({ name: formName });
 
+    console.log("FORM", form);
     if (!form) {
       console.log(`[Server] Form not found: ${formName}`);
       return res.status(404).json({ message: "Form not found" });
