@@ -295,6 +295,34 @@ app.delete("/api/charts/:id", async (req, res) => {
   }
 });
 
+// Get metrics (field names) for a specific form
+app.get("/api/charts/:formName", async (req, res) => {
+  try {
+    const { formName } = req.params;
+    console.log(
+      `[Server] GET /api/charts/${formName} - Fetching metrics for form:`,
+      formName
+    );
+
+    // Find the form by name
+    const form = await Form.findOne({ name: formName });
+
+    if (!form) {
+      console.log(`[Server] Form not found: ${formName}`);
+      return res.status(404).json({ message: "Form not found" });
+    }
+
+    // Extract field names from the form
+    const fieldNames = form.fields.map((field) => field.name);
+    console.log(`[Server] Found field names for form ${formName}:`, fieldNames);
+
+    res.json(fieldNames);
+  } catch (error) {
+    console.error("[Server] Error fetching metrics:", error);
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // Form Responses
 app.post("/api/form-responses", async (req, res) => {
   try {

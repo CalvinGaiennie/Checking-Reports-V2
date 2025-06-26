@@ -1,5 +1,4 @@
 import { useReducer, useEffect } from "react";
-import GenericInputForm from "./GenericInputForm";
 import {
   getFormResponses,
   createForm,
@@ -7,10 +6,12 @@ import {
   deleteChart,
   api,
   getForms,
+  getMetrics,
 } from "../services/api.service";
 import CreateNewForm from "./CreateNewForm";
 import ManageChartsTable from "./ManageChartsTable";
 import UserAccountsTable from "./UserAccountsTable";
+import ChartCreationForm from "./ChartCreationForm";
 
 const initialState = {
   users: [],
@@ -29,7 +30,8 @@ const initialState = {
   permissionLevels: ["user", "viewer", "basic admin", "full admin"],
   currentInputRequiredBool: false,
   inProgressFormName: "",
-  inProgressChartForm: "",
+  inProgressChartName: "",
+  inProgressChartMetrics: [],
 };
 
 const reducer = (state, action) => {
@@ -67,10 +69,10 @@ const reducer = (state, action) => {
       return { ...state, currentInputDescription: action.payload };
     case "setCurrentInputRequiredBool":
       return { ...state, currentInputRequiredBool: action.payload };
-    case "setinProgressFormName":
-      return { ...state, inProgressFormName: action.payload };
-    case "setinProgressChartForm":
-      return { ...state, inProgressChartForm: action.payload };
+    case "setinProgressChartName":
+      return { ...state, inProgressChartName: action.payload };
+    case "setinProgressChartMetrics":
+      return { ...state, inProgressChartMetrics: action.payload };
     default:
       return state;
   }
@@ -299,6 +301,15 @@ function Admin() {
     fetchForms();
   }, []);
 
+  useEffect(() => {
+    const fetchMetrics = async () => {
+      const metrics = await getMetrics(state.inProgressChartName);
+      console.log("Metrics", metrics);
+      dispatch({ type: "setinProgressChartMetrics", payload: metrics });
+    };
+    fetchMetrics();
+  }, [state.inProgressChartName]);
+
   if (state.error)
     return <div className="alert alert-danger">{state.error}</div>;
 
@@ -313,9 +324,10 @@ function Admin() {
       <div className="mb-5 border rounded p-4">
         <h2>Create New Chart</h2>
         <hr />
-        <GenericInputForm
+        <ChartCreationForm
           key={state.formKey}
           onSubmit={createChart}
+          dispatch={dispatch}
           //Make it so that the selected input becomes the inprogresschartform
           initialData={{
             type: "bar",
@@ -341,7 +353,7 @@ function Admin() {
             {
               name: "metric",
               type: "select",
-              options: [...state.keys],
+              options: [...state.inProgressChartMetrics],
             },
           ]}
         />

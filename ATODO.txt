@@ -9,6 +9,12 @@ FEATURES
 
 BUGS
 • fix the charts infinite loop
+•At certain screen widths the manage charts for overflows. need to handle overflow for each column
 
 PRIORITY
-•add ability to filter the responses you are getting from the db by form name
+•Add ability to filter the responses you are getting from the db by form name
+•Fix the return metrics
+
+
+
+the server get metrics is returning the charts from the db I want the different keys from a form. specifically the form whos name matches the formname passed to get metrics

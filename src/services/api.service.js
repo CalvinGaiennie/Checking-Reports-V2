@@ -127,3 +127,20 @@ export const getFormResponses = async () => {
     throw error;
   }
 };
+
+export const getMetrics = async (formName) => {
+  try {
+    const response = await api.get("/charts/" + formName);
+
+    // The server now returns an array of field names directly
+    const metrics = response.data;
+    console.log(
+      "METRICS-METRICS-METRICS-METRICS-METRICS-METRICS-METRICS-METRICS-METRICS-METRICS-METRICS-METRICS",
+      metrics
+    );
+    return metrics;
+  } catch (error) {
+    console.error("Failed to fetch form responses:", error);
+    throw error;
+  }
+};
