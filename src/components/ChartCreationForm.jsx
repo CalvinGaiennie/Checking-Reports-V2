@@ -6,6 +6,7 @@ function ChartCreationForm({ onSubmit, initialData, fields, dispatch }) {
       type: "bar",
       name: "",
       input: "formResponses",
+      metric: "",
     }
   );
 
@@ -20,7 +21,12 @@ function ChartCreationForm({ onSubmit, initialData, fields, dispatch }) {
 
       await onSubmit(transformedData);
       setFormData(
-        initialData || { type: "bar", name: "", input: "formResponses" }
+        initialData || {
+          type: "bar",
+          name: "",
+          input: "formResponses",
+          metric: "",
+        }
       );
     } catch (error) {
       console.error("Error submitting form:", error);

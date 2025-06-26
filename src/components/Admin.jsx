@@ -303,22 +303,27 @@ function Admin() {
 
   useEffect(() => {
     const fetchMetrics = async () => {
-      // Guard against empty chart names
       if (
         !state.inProgressChartName ||
         state.inProgressChartName.trim() === ""
       ) {
-        // console.log("Admin: Chart name is empty, skipping metrics fetch");
         dispatch({ type: "setinProgressChartMetrics", payload: [] });
         return;
       }
 
-      const metrics = await getMetrics(state.inProgressChartName);
-      // console.log("Metrics", metrics);
-      dispatch({ type: "setinProgressChartMetrics", payload: metrics });
+      const responsesForSelectedForm = state.formResponses.filter(
+        (r) => r.formName === state.inProgressChartName
+      );
+
+      const metricOptions =
+        responsesForSelectedForm.length > 0
+          ? Object.keys(responsesForSelectedForm[0].questionResponses)
+          : [];
+
+      dispatch({ type: "setinProgressChartMetrics", payload: metricOptions });
     };
     fetchMetrics();
-  }, [state.inProgressChartName]);
+  }, [state.inProgressChartName, state.formResponses]);
 
   if (state.error)
     return <div className="alert alert-danger">{state.error}</div>;
@@ -338,12 +343,14 @@ function Admin() {
           key={state.formKey}
           onSubmit={createChart}
           dispatch={dispatch}
-          //Make it so that the selected input becomes the inprogresschartform
           initialData={{
             type: "bar",
             name: "",
             input: "formResponses",
-            metric: state.keys.length > 0 ? state.keys[0] : "",
+            metric:
+              state.inProgressChartMetrics.length > 0
+                ? state.inProgressChartMetrics[0]
+                : "",
           }}
           fields={[
             {
