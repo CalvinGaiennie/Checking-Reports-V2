@@ -191,12 +191,9 @@ function ChartComponent({ inputData = [], chartType, title, metric }) {
   ]);
 
   useEffect(() => {
-    setInitialActiveDates();
-  }, [state.startDate, state.endDate]);
-
-  function setInitialActiveDates() {
     if (!state.startDate || !state.endDate || state.activeDates.length > 0)
       return;
+
     const dates = [];
     const startDate = new Date(state.startDate);
     const endDate = new Date(state.endDate);
@@ -206,8 +203,14 @@ function ChartComponent({ inputData = [], chartType, title, metric }) {
       startDate.setDate(startDate.getDate() + 1);
     }
 
-    dispatch({ type: "set_active_dates", payload: dates });
-  }
+    // Only dispatch if dates are actually different
+    if (
+      dates.length !== state.activeDates.length ||
+      !dates.every((d, i) => d === state.activeDates[i])
+    ) {
+      dispatch({ type: "set_active_dates", payload: dates });
+    }
+  }, [state.startDate, state.endDate, state.activeDates]);
 
   function handleStartDateChange(e) {
     dispatch({ type: "set_start_date", payload: e.target.value });
