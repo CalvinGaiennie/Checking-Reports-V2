@@ -6,6 +6,7 @@ FEATURES
 •Custom Permissions: allow admin to give user permissions to certain, charts, settings, and forms.
 •allow admin to create reports that can be exported
 •allow users to set which form will autoload for them
+•Add a Tutorial page
 
 BUGS
 •get the metric field state to reflect what it shows when input is changed it is sometimes blank and sometimes from a previously created chart
