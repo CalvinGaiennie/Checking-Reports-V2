@@ -7,6 +7,7 @@ FEATURES
 •allow admin to create reports that can be exported
 •allow users to set which form will autoload for them
 •Add a Tutorial page
+•Build another version that is more similar to google forms IE better suited for individuals. This current version is aimed at organizations
 
 BUGS
 •get the metric field state to reflect what it shows when input is changed it is sometimes blank and sometimes from a previously created chart

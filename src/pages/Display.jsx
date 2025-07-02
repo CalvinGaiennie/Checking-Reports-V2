@@ -12,12 +12,20 @@ function Display() {
   const [charts, setCharts] = useState([]);
   const [cardSelection, setCardSelection] = useState("input");
   const [error, setError] = useState(null);
+  const [selectedFormName, setSelectedFormName] = useState("");
+  const [formNames, setFormNames] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await getFormResponses();
         setFormResponses(data);
+        const formNames = [
+          ...new Set(data.map((response) => response.formName)),
+        ];
+        console.log(formNames);
+        setFormNames(formNames);
+        setSelectedFormName(formNames[0]);
       } catch (error) {
         console.error("Error fetching data:", error);
         setError("Failed to load form responses");
@@ -95,6 +103,11 @@ function Display() {
 
     return inputData;
   }
+
+  function handleFormChange(e) {
+    setSelectedFormName(e.target.value);
+  }
+
   return (
     <div className="container mt-4">
       <NavBar />
@@ -110,13 +123,30 @@ function Display() {
             metric={chart.metric}
           />
         ))}
-      <div>
+      <div style={{ marginBottom: "300px" }}>
         <h2>Which data would you like to see here?</h2>
-        <select onChange={handleCardChange}>
+        {/* <select onChange={handleCardChange}>
           <option value="input">Input</option>
           <option value="legacy">Legacy</option>
+        </select> */}
+        <select
+          onChange={handleFormChange}
+          value={selectedFormName}
+          style={{ marginBottom: "20px" }}
+        >
+          {formNames.map((name, index) => (
+            <option key={`${name}-${index}`} value={name}>
+              {name}
+            </option>
+          ))}
         </select>
-        {cardSelection === "legacy"
+        {formResponses.length > 0 &&
+          formResponses.map((entry, index) => {
+            if (entry.formName == selectedFormName) {
+              return <FormResponseCard key={`order${index}`} data={entry} />;
+            }
+          })}
+        {/* {cardSelection === "legacy"
           ? legacyData.length > 0 &&
             legacyData.map((entry, index) => (
               <Order key={`order${index}`} data={entry} />
@@ -124,7 +154,7 @@ function Display() {
           : formResponses.length > 0 &&
             formResponses.map((entry, index) => (
               <FormResponseCard key={`order${index}`} data={entry} />
-            ))}
+            ))} */}
       </div>
     </div>
   );
