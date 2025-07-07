@@ -2,12 +2,12 @@ FEATURES
 •Add another page to show form responses seperate from the charts or allow admin more control of the display page.
 •Fix the manage forms field
 •Add default settings to charts
-•let users set a default form 
 •Custom Permissions: allow admin to give user permissions to certain, charts, settings, and forms.
 •allow admin to create reports that can be exported
 •allow users to set which form will autoload for them
 •Add a Tutorial page
 •Build another version that is more similar to google forms IE better suited for individuals. This current version is aimed at organizations
+
 
 BUGS
 •get the metric field state to reflect what it shows when input is changed it is sometimes blank and sometimes from a previously created chart
@@ -15,3 +15,7 @@ BUGS
 
 STYLING
 • set a max width on the admin page forms and for charts
+
+IN PROGRESS FEATURE
+•let users set a default form 
+I need to check to see if new users added have a settings feild making it to the db then get the user settings page to update it then get the input feild to respect it

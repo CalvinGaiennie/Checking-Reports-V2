@@ -7,6 +7,7 @@ import CreateAccount from "./pages/CreateAccount";
 import AdminPage from "./pages/AdminPage";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
+import UserSettingsPage from "./pages/UserSettingsPage";
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
               />
             }
           />
+          <Route path="/user-settings" element={<UserSettingsPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/create-account" element={<CreateAccount />} />
         </Routes>

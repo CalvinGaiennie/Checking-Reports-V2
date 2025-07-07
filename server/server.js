@@ -52,7 +52,10 @@ const userSchema = new mongoose.Schema({
   name: String,
   username: String,
   password: String, // In production, ensure this is properly hashed
-  permissions: { type: String, default: "user" }, // Add permissions with default value 'user'
+  permissions: { type: String, default: "user" },
+  settings: {
+    defaultSelectedForm: { type: String, default: "" },
+  },
 });
 
 const User = mongoose.model("User", userSchema);
@@ -98,7 +101,7 @@ app.get("/api/users", async (req, res) => {
 // User routes
 app.post("/api/users", async (req, res) => {
   try {
-    const { name, username, password } = req.body;
+    const { name, username, password, settings } = req.body;
 
     // Check if username already exists
     const existingUser = await User.findOne({ username });
@@ -110,6 +113,7 @@ app.post("/api/users", async (req, res) => {
       name,
       username,
       password, // Note: In production, you should hash this password
+      settings,
     });
 
     const savedUser = await user.save();
@@ -141,6 +145,7 @@ app.post("/api/users/login", async (req, res) => {
         message: "Login successful",
         username: user.username,
         permissions: user.permissions || "user",
+        settings: user.settings || {},
       });
     } else {
       console.log("Invalid password for:", username);

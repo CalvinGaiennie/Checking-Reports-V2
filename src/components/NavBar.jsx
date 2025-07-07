@@ -25,6 +25,9 @@ function NavBar() {
             Admin
           </Link>
         )}
+        <Link className="navbar-brand" to="/user-settings">
+          User Settings
+        </Link>
         {!isLoggedIn ? (
           <>
             <Link className="navbar-brand" to="/login">
