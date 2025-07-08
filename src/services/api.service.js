@@ -143,3 +143,13 @@ export const getMetrics = async (formName) => {
     throw error;
   }
 };
+
+export const updateUserSettings = async (userData) => {
+  try {
+    const response = await api.post("/users/update-settings", userData);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to update user setting:", error);
+    throw error;
+  }
+};

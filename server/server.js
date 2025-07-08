@@ -143,6 +143,7 @@ app.post("/api/users/login", async (req, res) => {
       return res.json({
         success: true,
         message: "Login successful",
+        userId: user._id,
         username: user.username,
         permissions: user.permissions || "user",
         settings: user.settings || {},
@@ -184,6 +185,23 @@ app.patch("/api/users/:userId/permissions", async (req, res) => {
   }
 });
 
+app.post("/api/users/update-settings", async (req, res) => {
+  try {
+    const { userId, settings } = req.body;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    user.settings = settings;
+    await user.save();
+    res.json({ success: true, message: "Settings updated successfully" });
+  } catch (error) {
+    console.error("Error updating user settings:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to update settings" });
+  }
+});
 ///////////////////////////
 // Form Routes
 app.get("/api/forms", async (req, res) => {
