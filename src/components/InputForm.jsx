@@ -40,7 +40,7 @@ function InputForm({ onSubmit, fields }) {
     <form className="container mt-4" onSubmit={handleSubmit}>
       <div className="mb-3">
         {fields.map((field, index) => (
-          <div key={`${field.name}-${index}`}>
+          <div key={`${field.name}-${index}`} className="mb-3">
             <label className="form-label">
               {field.name.charAt(0).toUpperCase() + field.name.slice(1)}
             </label>
