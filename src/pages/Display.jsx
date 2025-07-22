@@ -19,11 +19,22 @@ function Display() {
     const fetchData = async () => {
       try {
         const data = await getFormResponses();
+        console.log("=== Display Page Debug ===");
+        console.log("All form responses:", data);
+        console.log("Form response count:", data.length);
+        if (data.length > 0) {
+          console.log("Sample form response:", data[0]);
+          console.log("Available form names:", [
+            ...new Set(data.map((response) => response.formName)),
+          ]);
+        }
+        console.log("=== End Display Debug ===");
+
         setFormResponses(data);
         const formNames = [
           ...new Set(data.map((response) => response.formName)),
         ];
-        console.log(formNames);
+        // console.log(formNames);
         setFormNames(formNames);
         setSelectedFormName(formNames[0]);
       } catch (error) {
@@ -38,6 +49,13 @@ function Display() {
     const loadCharts = async () => {
       try {
         const data = await getCharts();
+        console.log("=== Charts Debug ===");
+        console.log("All charts:", data);
+        console.log("Chart count:", data?.length || 0);
+        if (data && data.length > 0) {
+          console.log("Sample chart:", data[0]);
+        }
+        console.log("=== End Charts Debug ===");
         setCharts(data || []);
       } catch (error) {
         console.error("Error fetching charts:", error);
@@ -93,14 +111,25 @@ function Display() {
     //Input data is an array
     //I need to get question responses from each array item
     //I really only need to get the quest that matches the metric from each response
-    const inputData = formResponses
-      .filter((response) => response.formName === chart.input)
-      .map((response) => {
-        return {
-          [chart.metric]: response.questionResponses[chart.metric],
-        };
-      });
+    console.log("=== getInputData Debug ===");
+    console.log("Chart:", chart);
+    console.log("All formResponses:", formResponses);
+    console.log("Looking for formName:", chart.input);
+    console.log("Looking for metric:", chart.metric);
 
+    const filteredResponses = formResponses.filter(
+      (response) => response.formName === chart.input
+    );
+    console.log("Filtered responses for formName:", filteredResponses);
+
+    const inputData = filteredResponses.map((response) => {
+      return {
+        [chart.metric]: response.questionResponses[chart.metric],
+      };
+    });
+
+    console.log("Final inputData:", inputData);
+    console.log("=== End Debug ===");
     return inputData;
   }
 

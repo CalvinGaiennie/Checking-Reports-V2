@@ -1,18 +1,42 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function ChartCreationForm({ onSubmit, initialData, fields, dispatch }) {
   const [formData, setFormData] = useState(
     initialData || {
       type: "bar",
       name: "",
-      input: "formResponses",
+      input: "",
       metric: "",
     }
   );
 
+  useEffect(() => {
+    if (initialData) {
+      setFormData(initialData);
+    }
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Check for empty metric
+      if (!formData.metric || formData.metric.trim() === "") {
+        alert("Please select a metric for the chart.");
+        return;
+      }
+
+      // Check for empty name
+      if (!formData.name || formData.name.trim() === "") {
+        alert("Please enter a chart name.");
+        return;
+      }
+
+      // Check for empty input
+      if (!formData.input || formData.input.trim() === "") {
+        alert("Please select an input form.");
+        return;
+      }
+
       const transformedData = fields.reduce((acc, field) => {
         const serverKey = field.name.toLowerCase();
         acc[serverKey] = formData[serverKey];
@@ -24,7 +48,7 @@ function ChartCreationForm({ onSubmit, initialData, fields, dispatch }) {
         initialData || {
           type: "bar",
           name: "",
-          input: "formResponses",
+          input: "",
           metric: "",
         }
       );

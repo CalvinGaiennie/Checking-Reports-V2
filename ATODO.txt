@@ -11,7 +11,9 @@ FEATURES
 
 BUGS
 •get the metric field state to reflect what it shows when input is changed it is sometimes blank and sometimes from a previously created chart
+currently it has validation to prevent you having blank state but I need to fix the root issue
 •At certain screen widths the manage charts for overflows. need to handle overflow for each column
+•Fix the metric field on the chart creator.
 
 STYLING
 • set a max width on the admin page forms and for charts

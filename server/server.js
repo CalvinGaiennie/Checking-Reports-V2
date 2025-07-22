@@ -281,6 +281,27 @@ app.post("/api/charts", async (req, res) => {
   try {
     const { type, name, input, metric } = req.body;
 
+    // Check for empty metric
+    if (!metric || metric.trim() === "") {
+      return res
+        .status(400)
+        .json({ message: "Metric is required and cannot be empty." });
+    }
+
+    // Check for empty name
+    if (!name || name.trim() === "") {
+      return res
+        .status(400)
+        .json({ message: "Chart name is required and cannot be empty." });
+    }
+
+    // Check for empty input
+    if (!input || input.trim() === "") {
+      return res
+        .status(400)
+        .json({ message: "Input form is required and cannot be empty." });
+    }
+
     // Check if chart name already exists
     const existingChart = await Chart.findOne({ name });
     if (existingChart) {

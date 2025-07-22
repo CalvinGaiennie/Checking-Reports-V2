@@ -150,6 +150,12 @@ function ChartComponent({ inputData = [], chartType, title, metric }) {
     }
   }, [inputData]);
 
+  useEffect(() => {
+    console.log("ChartComponent - inputData:", inputData);
+    console.log("ChartComponent - metric:", metric);
+    console.log("ChartComponent - chartData:", state.chartData);
+  }, [inputData, metric, state.chartData]);
+
   //gets the unique dates from the input data and sorts them
   // useEffect(() => {
   //   const uniqueDates = new Set(

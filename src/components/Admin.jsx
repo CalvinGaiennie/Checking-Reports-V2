@@ -350,7 +350,7 @@ function Admin() {
           initialData={{
             type: "bar",
             name: "",
-            input: "formResponses",
+            input: state.formNames.length > 0 ? state.formNames[0] : "",
             metric:
               state.inProgressChartMetrics.length > 0
                 ? state.inProgressChartMetrics[0]
