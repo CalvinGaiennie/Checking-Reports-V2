@@ -185,16 +185,27 @@ app.patch("/api/users/:userId/permissions", async (req, res) => {
   }
 });
 
-app.post("/api/users/update-settings", async (req, res) => {
+app.patch("/api/users/update-settings", async (req, res) => {
   try {
     const { userId, settings } = req.body;
+    console.log("update settings called");
+    console.log("userId:", userId);
+    console.log("settings:", settings);
     const user = await User.findById(userId);
+    console.log("user:", user);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
+    console.log("user.settings:", user.settings);
     user.settings = settings;
+    console.log("user.settings:", user.settings);
     await user.save();
-    res.json({ success: true, message: "Settings updated successfully" });
+    res.json({
+      success: true,
+      message: `Settings updated successfully settings:${JSON.stringify(
+        settings
+      )}`,
+    });
   } catch (error) {
     console.error("Error updating user settings:", error);
     res

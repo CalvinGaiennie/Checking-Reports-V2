@@ -10,6 +10,7 @@ export const AuthProvider = ({ children }) => {
       ? JSON.parse(savedAuth)
       : {
           status: "not logged in",
+          userId: null,
           username: null,
           permissions: null,
         };
@@ -20,9 +21,10 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem("authState", JSON.stringify(authState));
   }, [authState]);
 
-  const login = (username, permissions) => {
+  const login = (username, permissions, userId) => {
     setAuthState({
       status: "logged in",
+      userId,
       username,
       permissions,
     });
@@ -32,6 +34,7 @@ export const AuthProvider = ({ children }) => {
     setAuthState({
       status: "not logged in",
       username: null,
+      userId: null,
       permissions: null,
     });
   };

@@ -17,7 +17,7 @@ function LoginForm() {
     try {
       const response = await loginUser(formData);
       if (response.success) {
-        login(response.username, response.permissions);
+        login(response.username, response.permissions, response.userId);
         setMessage("Login successful!");
         // Redirect to home page after successful login
         setTimeout(() => navigate("/"), 1500);

@@ -146,7 +146,8 @@ export const getMetrics = async (formName) => {
 
 export const updateUserSettings = async (userData) => {
   try {
-    const response = await api.post("/users/update-settings", userData);
+    const response = await api.patch("/users/update-settings", userData);
+    console.log("Response:", response.data);
     return response.data;
   } catch (error) {
     console.error("Failed to update user setting:", error);

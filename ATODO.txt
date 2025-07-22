@@ -19,11 +19,3 @@ STYLING
 • set a max width on the admin page forms and for charts
 
 IN PROGRESS FEATURE
-•let users set a default form 
-I need to check to see if new users added have a settings feild making it to the db then get the user settings page to update it then get the input feild to respect it
-
-Get new user to have the first element in list that they have permissions for as default
-
-get auth state to hold userId and use it to update settings
-
-need to read and possibly refactor auth state
