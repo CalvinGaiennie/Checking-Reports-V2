@@ -17,5 +17,6 @@ currently it has validation to prevent you having blank state but I need to fix 
 
 STYLING
 • set a max width on the admin page forms and for charts
+- get the navbar spacing to adapt to the number of links currently shown
 
 IN PROGRESS FEATURE

@@ -23,7 +23,20 @@ function App() {
               />
             }
           />
-          <Route path="/input" element={<Input />} />
+          <Route
+            path="/input"
+            element={
+              <ProtectedRoute
+                element={<Input />}
+                allowedPermissions={[
+                  "user",
+                  "viewer",
+                  "basic admin",
+                  "full admin",
+                ]}
+              />
+            }
+          />
           <Route
             path="/admin"
             element={
@@ -33,7 +46,20 @@ function App() {
               />
             }
           />
-          <Route path="/user-settings" element={<UserSettingsPage />} />
+          {/* <Route
+            path="/user-settings"
+            element={
+              <ProtectedRoute
+                element={<UserSettingsPage />}
+                allowedPermissions={[
+                  "user",
+                  "viewer",
+                  "basic admin",
+                  "full admin",
+                ]}
+              />
+            }
+          /> */}
           <Route path="/login" element={<Login />} />
           <Route path="/create-account" element={<CreateAccount />} />
         </Routes>

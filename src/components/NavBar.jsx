@@ -16,18 +16,28 @@ function NavBar() {
             Display
           </Link>
         )}
-        <Link className="navbar-brand" to="/input">
-          Input
-        </Link>
+        {(permissions === "user" ||
+          permissions === "viewer" ||
+          permissions === "basic admin" ||
+          permissions === "full admin") && (
+          <Link className="navbar-brand" to="/input">
+            Input
+          </Link>
+        )}
 
         {permissions === "full admin" && (
           <Link className="navbar-brand" to="/admin">
             Admin
           </Link>
         )}
-        <Link className="navbar-brand" to="/user-settings">
-          User Settings
-        </Link>
+        {/* {(permissions === "user" ||
+          permissions === "viewer" ||
+          permissions === "basic admin" ||
+          permissions === "full admin") && (
+          <Link className="navbar-brand" to="/user-settings">
+            User Settings
+          </Link>
+        )} */}
         {!isLoggedIn ? (
           <>
             <Link className="navbar-brand" to="/login">
