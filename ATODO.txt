@@ -20,3 +20,9 @@ STYLING
 - get the navbar spacing to adapt to the number of links currently shown
 
 IN PROGRESS FEATURE
+
+
+PRIORITY
+restyle full screen margins
+make the charts prettier
+Add an about page 
