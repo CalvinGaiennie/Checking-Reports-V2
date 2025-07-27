@@ -25,4 +25,4 @@ IN PROGRESS FEATURE
 PRIORITY
 restyle full screen margins
 make the charts prettier
-Add an about page 
+Add an about page A
